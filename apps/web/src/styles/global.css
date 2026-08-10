@@ -360,14 +360,15 @@ h3 {
   font-size: 15px;
 }
 
+/* Il marchio è tondo, quindi il contenitore lo è: un badge circolare dentro un
+   quadrato arrotondato lascia quattro spicchi di bordo vuoti negli angoli. */
 .brand-mark {
   width: 38px;
   height: 38px;
   flex: none;
-  border-radius: 11px;
-  object-fit: cover;
-  border: 1px solid var(--border-strong);
-  box-shadow: 0 6px 20px rgba(34, 195, 230, 0.2);
+  border-radius: 50%;
+  object-fit: contain;
+  box-shadow: 0 6px 20px rgba(34, 195, 230, 0.24);
 }
 
 .brand-name {
@@ -710,45 +711,31 @@ h3 {
 
 .hero-halo {
   position: absolute;
-  width: min(70vw, 480px);
+  width: min(72vw, 500px);
   aspect-ratio: 1;
   border-radius: 50%;
   background:
-    radial-gradient(circle, rgba(34, 195, 230, 0.26) 0%, rgba(124, 92, 255, 0.14) 48%, transparent 70%);
-  filter: blur(28px);
+    radial-gradient(circle, rgba(34, 195, 230, 0.22) 0%, rgba(124, 92, 255, 0.16) 52%, transparent 72%);
+  filter: blur(30px);
 }
 
+/* Un'orbita tratteggiata attorno al badge, nulla più: il logo ha già il suo
+   anello inciso dentro, e sovrapporgliene un altro concentrico li fa
+   sembrare due cerchi disallineati. */
 .hero-ring {
   position: absolute;
-  width: min(64vw, 440px);
+  width: min(76vw, 528px);
   aspect-ratio: 1;
   border-radius: 50%;
-  border: 1px solid rgba(34, 195, 230, 0.22);
+  border: 1px dashed rgba(124, 92, 255, 0.22);
 }
 
-.hero-ring::before,
-.hero-ring::after {
-  content: "";
-  position: absolute;
-  border-radius: 50%;
-  border: 1px dashed rgba(124, 92, 255, 0.2);
-  inset: -22px;
-}
-
-.hero-ring::after {
-  inset: 26px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-style: solid;
-}
-
-/* Il PNG ha fondo nero pieno: la maschera radiale lo fonde con la pagina
-   invece di lasciare un quadrato stampato sullo sfondo. */
+/* Il logo è già un badge circolare con l'alfa tagliata sul cerchio: niente
+   maschera, niente quadrato nero da nascondere. */
 .hero-logo {
   position: relative;
   width: min(66vw, 460px);
   height: auto;
-  mask-image: radial-gradient(circle at 50% 50%, #000 58%, transparent 80%);
-  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 58%, transparent 80%);
 }
 
 /* ─── Titolo gigante ─── */
@@ -1614,9 +1601,8 @@ footer {
   width: 42px;
   height: 42px;
   flex: none;
-  border-radius: 12px;
-  object-fit: cover;
-  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+  object-fit: contain;
 }
 
 .footer-brand strong {
