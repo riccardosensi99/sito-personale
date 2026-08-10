@@ -160,8 +160,8 @@ function HeroPanel({ hero, mirror = false }: { hero: HeroSettings; mirror?: bool
           <motion.img
             className="hero-logo"
             src="/logo.webp"
-            width={900}
-            height={900}
+            width={880}
+            height={880}
             alt="Logo RS di Riccardo Sensi"
             fetchPriority="high"
             initial={{ opacity: 0, scale: 0.92 }}
