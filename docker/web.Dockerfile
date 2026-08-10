@@ -26,6 +26,11 @@ FROM nginx:1.27-alpine AS runner
 COPY docker/nginx.conf.template /etc/nginx/templates/default.conf.template
 COPY docker/security-headers.conf /etc/nginx/snippets/security-headers.conf
 COPY docker/snippets/site-locations.conf /etc/nginx/snippets/site-locations.conf
+
+# Riempito all'avvio solo dove serve l'autenticazione HTTP; deve però esistere
+# sempre, altrimenti l'include nel server block fa fallire nginx.
+COPY docker/40-basic-auth.sh /docker-entrypoint.d/40-basic-auth.sh
+RUN touch /etc/nginx/snippets/auth.conf && chmod +x /docker-entrypoint.d/40-basic-auth.sh
 COPY --from=builder /app/apps/web/dist /usr/share/nginx/html
 
 EXPOSE 80
