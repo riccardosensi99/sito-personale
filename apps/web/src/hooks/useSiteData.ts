@@ -3,6 +3,28 @@ import { api } from '../lib/api';
 import { DEFAULT_SETTINGS } from '../lib/defaults';
 import type { GithubStats, Project, SiteSettings } from '../lib/types';
 
+/// Merge a due livelli: i blocchi salvati a database vincono, ma un campo aggiunto
+/// dopo il seed (il DB è create-only) arriva comunque dai default invece di essere
+/// `undefined`. Gli array restano quelli del database: sono liste, non patch.
+function mergeSettings(saved: Partial<SiteSettings>): SiteSettings {
+  const merged = { ...DEFAULT_SETTINGS } as Record<string, unknown>;
+
+  for (const [key, value] of Object.entries(saved)) {
+    const fallback = merged[key];
+    const mergeable =
+      value !== null &&
+      typeof value === 'object' &&
+      !Array.isArray(value) &&
+      fallback !== null &&
+      typeof fallback === 'object' &&
+      !Array.isArray(fallback);
+
+    merged[key] = mergeable ? { ...(fallback as object), ...(value as object) } : value;
+  }
+
+  return merged as SiteSettings;
+}
+
 type SiteData = {
   projects: Project[];
   settings: SiteSettings;
@@ -35,7 +57,7 @@ export function useSiteData(): SiteData {
         else setError('Non riesco a caricare i progetti in questo momento.');
 
         if (s.status === 'fulfilled') {
-          setSettings({ ...DEFAULT_SETTINGS, ...s.value });
+          setSettings(mergeSettings(s.value));
         }
 
         if (g.status === 'fulfilled') setStats(g.value);

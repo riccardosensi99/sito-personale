@@ -1,3 +1,4 @@
+import { GithubIcon } from './BrandIcons';
 import type { GithubStats } from '../../lib/types';
 
 type Props = { stats: GithubStats | null; githubUrl: string };
@@ -16,7 +17,8 @@ export function GithubCard({ stats, githubUrl }: Props) {
             </p>
             <div className="hero-actions">
               <a className="btn btn-primary" href={githubUrl} target="_blank" rel="noreferrer">
-                Visita GitHub ↗
+                <GithubIcon aria-hidden="true" />
+                Visita GitHub
               </a>
             </div>
           </div>

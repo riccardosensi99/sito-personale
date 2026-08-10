@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Nav } from '../components/site/Nav';
 import { Hero } from '../components/site/Hero';
+import { TerminalBand } from '../components/site/Terminal';
 import { Projects } from '../components/site/Projects';
 import { Services } from '../components/site/Services';
 import { About } from '../components/site/About';
@@ -30,7 +31,8 @@ export default function Home() {
     <>
       <Nav />
       <main id="top">
-        <Hero hero={settings.hero} terminal={settings.terminal} githubUrl={settings.contact.github} />
+        <Hero hero={settings.hero} contact={settings.contact} />
+        <TerminalBand terminal={settings.terminal} />
         <Projects projects={projects} loading={loading} error={error} />
         <Services services={settings.services} />
         <About timeline={settings.timeline} techRadar={settings.techRadar} />

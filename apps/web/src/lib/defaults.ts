@@ -6,6 +6,8 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   hero: {
     available: true,
     availableLabel: 'Disponibile per nuovi progetti',
+    claimLead: 'build.',
+    claimTrail: 'ship.',
     titleLead: 'Costruisco prodotti digitali',
     titleAccent: 'solidi, veloci e intelligenti.',
     copy: 'Sono Riccardo, Full Stack Developer e Flutter Developer. Progetto web app, backend, mobile app e automazioni AI con un approccio concreto: architetture pulite, interfacce chiare e prodotti pronti a crescere.',
