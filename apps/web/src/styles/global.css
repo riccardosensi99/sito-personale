@@ -1022,7 +1022,6 @@ section {
      contenitore flex scorrevole nella corsa di scorrimento, quindi l'ultima
      card resterebbe schiacciata al bordo. Lì fa il lavoro un distanziatore. */
   padding: var(--sp-5) 0 var(--sp-5) var(--rail-edge);
-  perspective: 1500px;
 }
 
 .rail-viewport::-webkit-scrollbar { display: none; }
@@ -1033,11 +1032,17 @@ section {
   border-radius: var(--r-md);
 }
 
+/* Niente transform-style: preserve-3d qui, e niente perspective sul viewport.
+   Quella combinazione crea contesti 3D annidati dentro un contenitore
+   scorrevole, e Chrome smette di far combaciare il hit test con ciò che si
+   vede: i click sulle card dopo la prima finivano su .rail-track. La
+   prospettiva sta invece dentro la transform di ogni card (vedi ProjectRail).
+   Ogni card ha così il suo punto di fuga anziché uno condiviso: a 14° la
+   differenza non si vede, e le card restano cliccabili. */
 .rail-track {
   display: flex;
   align-items: stretch;
   gap: var(--sp-5);
-  transform-style: preserve-3d;
 }
 
 /* Chiude il nastro sul bordo destro del contenitore, simmetrico al padding
@@ -1053,7 +1058,6 @@ section {
   flex: none;
   width: var(--rail-card);
   scroll-snap-align: start;
-  transform-style: preserve-3d;
   will-change: transform, opacity;
 }
 
@@ -1837,8 +1841,8 @@ footer {
     transform: none;
   }
 
-  /* Con il movimento ridotto la passata JS non gira: le card restano piatte,
-     quindi va azzerata anche la prospettiva o resterebbe un residuo di scorcio. */
-  .rail-viewport { perspective: none; }
+  /* Con il movimento ridotto la passata JS non gira, quindi le card non hanno
+     alcuna transform: restano piatte da sole. Resta da togliere lo scorrimento
+     animato dei pulsanti. */
   .rail-viewport { scroll-behavior: auto; }
 }
