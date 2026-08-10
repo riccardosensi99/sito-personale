@@ -301,3 +301,41 @@ button.btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
   .row-actions { grid-column: 1 / -1; justify-content: flex-start; }
   .field-row { grid-template-columns: 1fr; }
 }
+
+/* ─── Attivazione del secondo fattore ────────────────────────────────────── */
+
+.totp-qr {
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  margin-bottom: 18px;
+  border-radius: var(--radius-md);
+  /* Il QR va letto da una fotocamera: sfondo bianco anche sul tema scuro. */
+  background: #fff;
+  border: 1px solid var(--border);
+}
+
+.totp-qr img { display: block; }
+
+.totp-manual {
+  margin-bottom: 20px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.totp-manual summary { cursor: pointer; font-weight: 600; color: #cbd4dc; }
+.totp-manual p { margin: 10px 0 8px; line-height: 1.5; }
+
+.totp-manual code {
+  display: inline-block;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 14px;
+  letter-spacing: .12em;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(0,0,0,.3);
+  border: 1px solid var(--border);
+  color: #9df9f0;
+  user-select: all;
+  word-break: break-all;
+}

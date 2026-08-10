@@ -1,6 +1,5 @@
 import argon2 from 'argon2';
 import { authenticator } from 'otplib';
-import QRCode from 'qrcode';
 import { PrismaClient } from '@prisma/client';
 import { config } from 'dotenv';
 import path from 'node:path';
@@ -97,17 +96,14 @@ async function seedAdmin(): Promise<void> {
   const passwordHash = await argon2.hash(password, { type: argon2.argon2id });
   const totpSecret = authenticator.generateSecret();
 
+  // totpEnabled resta false: il QR lo mostrerà il backoffice al primo accesso,
+  // così il secret non passa dai log del terminale né dall'output di un deploy.
   await prisma.user.create({ data: { email, passwordHash, totpSecret } });
-
-  const otpauth = authenticator.keyuri(email, 'riccardosensi.com', totpSecret);
-  const qr = await QRCode.toString(otpauth, { type: 'terminal', small: true });
 
   console.log('\n────────────────────────────────────────────────────────');
   console.log(` Admin creato: ${email}`);
-  console.log(' Scansiona questo QR con Google Authenticator / Aegis / 1Password:');
-  console.log(qr);
-  console.log(` Se preferisci inserirlo a mano — secret: ${totpSecret}`);
-  console.log(' Questo QR non verrà più mostrato: salva il secret ora.');
+  console.log(' Al primo accesso il backoffice ti mostrerà il QR da scansionare');
+  console.log(' con l\'app authenticator.');
   console.log('────────────────────────────────────────────────────────\n');
 }
 

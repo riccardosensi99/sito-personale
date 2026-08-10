@@ -13,7 +13,9 @@ model User {
   email        String    @unique
   passwordHash String
   totpSecret   String
-  totpEnabled  Boolean   @default(true)
+  /// Diventa true solo quando il secondo fattore è stato confermato dal telefono:
+  /// finché è false il login porta alla schermata di attivazione, non a quella del codice.
+  totpEnabled  Boolean   @default(false)
   /// Incrementata per invalidare in blocco tutte le sessioni emesse.
   tokenVersion Int       @default(0)
   lastLoginAt  DateTime?

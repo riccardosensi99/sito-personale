@@ -6,8 +6,9 @@
 #   certs/origin.pem   il certificato Origin generato dal pannello Cloudflare
 #   certs/origin.key   la relativa chiave privata
 
+# ROBOTS_DEFAULT è vuoto in produzione; negli ambienti di prova vale "noindex, nofollow".
 map $request_uri $robots_tag {
-  default                "";
+  default                "${ROBOTS_DEFAULT}";
   ~^/${ADMIN_PATH}       "noindex, nofollow, noarchive";
 }
 

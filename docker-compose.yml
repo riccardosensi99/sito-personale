@@ -61,9 +61,11 @@ services:
     depends_on:
       - api
     environment:
-      # Serve al template nginx per marcare il path admin come noindex/no-store.
+      # Servono al template nginx: il path admin è sempre noindex, mentre il resto
+      # del sito lo diventa solo dove ROBOTS_DEFAULT è valorizzato (staging).
       ADMIN_PATH: ${VITE_ADMIN_PATH}
-      NGINX_ENVSUBST_FILTER: ADMIN_PATH
+      ROBOTS_DEFAULT: ${ROBOTS_DEFAULT:-}
+      NGINX_ENVSUBST_FILTER: (ADMIN_PATH|ROBOTS_DEFAULT)
     ports:
       # Con Cloudflare Tunnel imposta WEB_BIND=127.0.0.1: nginx resta raggiungibile
       # solo dal server stesso e nessuna porta va aperta sul firewall.

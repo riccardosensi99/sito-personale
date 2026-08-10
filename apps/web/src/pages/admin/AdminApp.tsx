@@ -6,6 +6,7 @@ import { Dashboard } from './Dashboard';
 import { ProjectForm } from './ProjectForm';
 import { GithubImport } from './GithubImport';
 import { SettingsEditor } from './SettingsEditor';
+import { Security } from './Security';
 import '../../styles/admin.css';
 
 type Me = { email: string; lastLoginAt: string | null };
@@ -80,6 +81,7 @@ function AdminShell({
           <NavLink to={`${basePath}/nuovo`}>Nuovo progetto</NavLink>
           <NavLink to={`${basePath}/github`}>Importa da GitHub</NavLink>
           <NavLink to={`${basePath}/contenuti`}>Contenuti sito</NavLink>
+          <NavLink to={`${basePath}/sicurezza`}>Sicurezza</NavLink>
         </nav>
 
         <div className="admin-user">
@@ -107,6 +109,7 @@ function AdminShell({
           <Route path="progetti/:id" element={<ProjectForm basePath={basePath} />} />
           <Route path="github" element={<GithubImport basePath={basePath} />} />
           <Route path="contenuti" element={<SettingsEditor />} />
+          <Route path="sicurezza" element={<Security />} />
           <Route path="*" element={<Navigate to={basePath} replace />} />
         </Routes>
       </main>

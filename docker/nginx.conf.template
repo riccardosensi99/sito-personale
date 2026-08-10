@@ -7,8 +7,10 @@
 
 # try_files /index.html fa una internal redirect e riprocessa i location: gli header
 # del backoffice vanno quindi decisi sull'URI originale, non sul file servito.
+# ROBOTS_DEFAULT è vuoto in produzione; negli ambienti di prova vale "noindex, nofollow"
+# così i motori non finiscono per indicizzare una copia del sito.
 map $request_uri $robots_tag {
-  default                "";
+  default                "${ROBOTS_DEFAULT}";
   ~^/${ADMIN_PATH}       "noindex, nofollow, noarchive";
 }
 
