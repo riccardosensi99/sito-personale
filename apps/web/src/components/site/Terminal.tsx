@@ -49,29 +49,3 @@ export function Terminal({ terminal }: Props) {
     </div>
   );
 }
-
-/// La fascia che ospita il terminale sotto l'hero: prima raccontava se stessa
-/// dentro l'hero, ora ha una sua sezione e un titolo che la introduce.
-export function TerminalBand({ terminal }: Props) {
-  return (
-    <section className="terminal-band">
-      <div className="container terminal-grid">
-        <div className="reveal">
-          <div className="section-kicker">Setup</div>
-          <h2>
-            Lo stack,
-            <br />
-            senza slide.
-          </h2>
-          <p className="section-lead">
-            Quello che uso davvero tutti i giorni, dal frontend al server. È scritto nei contenuti
-            del sito: cambia quando cambia il mio lavoro, non quando ricordo di rifare il deploy.
-          </p>
-        </div>
-        <div className="reveal">
-          <Terminal terminal={terminal} />
-        </div>
-      </div>
-    </section>
-  );
-}

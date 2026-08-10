@@ -487,6 +487,121 @@ h3 {
 
 /* ═══ Hero ═══════════════════════════════════════════════════════════════ */
 
+/* La hero esiste in due forme.
+
+   Con la porta attiva (≥900px, movimento consentito) è una scena bloccata: la
+   traccia è alta più del viewport, dentro c'è un pannello sticky, e due ante che
+   contengono la stessa hero ritagliata a metà ruotano sui cardini ai bordi dello
+   schermo. Dietro c'è il terminale, che si scopre man mano.
+
+   Senza porta (mobile, prefers-reduced-motion) è una sezione normale: stessa
+   impaginazione, nessuna traccia alta, nessun 3D. */
+
+/* 200svh = 100svh di corsa bloccata: metà per aprire, metà per leggere il
+   terminale prima che la scena si stacchi e lasci passare i progetti. */
+.hero-track {
+  position: relative;
+  height: 200svh;
+}
+
+.hero-pin {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+}
+
+.hero-doors {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Ogni anta vive dentro una metà che non si trasforma mai e che ritaglia in
+   coordinate schermo. Serve perché a fine corsa l'anta esce di scena
+   traslando: la metà la taglia via, e non resta appeso nessun residuo del
+   dorso vicino al cardine. */
+.hero-half {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  perspective: 1900px;
+}
+
+/* La prospettiva sta sulla metà perché è lì che ha per figlio l'anta, ma le due
+   origini puntano entrambe al centro dello schermo: altrimenti ogni battente
+   avrebbe un suo punto di fuga e le due metà non sembrerebbero la stessa porta. */
+.hero-half--left {
+  left: 0;
+  perspective-origin: 100% 50%;
+}
+
+.hero-half--right {
+  right: 0;
+  perspective-origin: 0% 50%;
+}
+
+.hero-leaf {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  backface-visibility: hidden;
+  will-change: transform;
+  pointer-events: auto;
+}
+
+/* Il filo chiaro sul bordo interno dà spessore all'anta mentre ruota. */
+.hero-leaf--left {
+  left: 0;
+  transform-origin: left center;
+  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.07);
+}
+
+.hero-leaf--right {
+  right: 0;
+  transform-origin: right center;
+  box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.07);
+}
+
+/* Il pannello dentro l'anta è largo quanto il viewport: ogni anta ne mostra
+   metà, e le due metà combaciano perché partono dallo stesso identico layout. */
+.hero-leaf-inner {
+  position: absolute;
+  top: 0;
+  width: 200%;
+  height: 100%;
+}
+
+.hero-leaf--left .hero-leaf-inner { left: 0; }
+.hero-leaf--right .hero-leaf-inner { right: 0; }
+
+/* La fessura fra le ante: si accende appena iniziano ad aprirsi. */
+.hero-seam {
+  position: absolute;
+  top: 12%;
+  bottom: 12%;
+  left: 50%;
+  width: 2px;
+  transform: translateX(-1px);
+  background: linear-gradient(to bottom, transparent, var(--cyan-400), transparent);
+  box-shadow: 0 0 22px 3px rgba(34, 195, 230, 0.45);
+}
+
+.hero-reveal {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  align-content: center;
+  padding: 110px 0 var(--sp-6);
+  overflow: hidden;
+}
+
 .hero {
   position: relative;
   min-height: 100svh;
@@ -497,8 +612,35 @@ h3 {
   overflow: hidden;
 }
 
+/* Dentro l'anta il pannello riempie la scena; da solo si comporta da sezione. */
+.hero-panel {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 110px 0 var(--sp-6);
+}
+
+/* L'anta deve essere opaca, altrimenti il terminale che sta dietro traspare da
+   subito e la porta non ha nulla da svelare. Il fondo replica l'atmosfera del
+   body: i due pannelli sono larghi quanto il viewport e allineati ad esso,
+   quindi i gradienti combaciano e la fessura non si vede finché non si apre. */
+.hero-leaf .hero-panel {
+  background:
+    radial-gradient(ellipse 60% 45% at 12% 0%, rgba(34, 195, 230, 0.15), transparent 70%),
+    radial-gradient(ellipse 55% 40% at 88% 8%, rgba(124, 92, 255, 0.14), transparent 70%),
+    var(--bg);
+}
+
+.hero--plain .hero-panel {
+  height: auto;
+  flex: 1;
+  padding: 0;
+}
+
 /* Scanline morbide: firma cyberpunk, tenute a bassissima opacità. */
-.hero::after {
+.hero-panel::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -633,34 +775,6 @@ h3 {
   color: transparent;
 }
 
-.hero-statement-caption {
-  margin: var(--sp-4) 0 0;
-  font: 500 12px/1.5 var(--font-mono);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-/* ─── Fascia inferiore ─── */
-
-.hero-foot {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: var(--sp-5);
-  padding-top: var(--sp-5);
-  border-top: 1px solid var(--border);
-}
-
-.hero-socials {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-1);
-}
-
 .icon-link {
   display: grid;
   place-items: center;
@@ -681,40 +795,6 @@ h3 {
   height: 19px;
 }
 
-.hero-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sp-6);
-}
-
-.hero-meta strong {
-  display: block;
-  font-family: var(--font-display);
-  font-size: 18px;
-  letter-spacing: -0.03em;
-  margin-bottom: 2px;
-}
-
-.hero-meta span {
-  color: var(--muted);
-  font-size: 13px;
-}
-
-.hero-location {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--sp-2);
-  color: var(--muted);
-  font: 500 12px/1 var(--font-mono);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.hero-location svg {
-  width: 14px;
-  height: 14px;
-  color: var(--primary);
-}
 
 /* ═══ Sezioni ════════════════════════════════════════════════════════════ */
 
@@ -1371,21 +1451,91 @@ section {
 /* ═══ Footer ═════════════════════════════════════════════════════════════ */
 
 footer {
-  padding: 0 0 var(--sp-7);
+  padding: 0 0 var(--sp-6);
   color: var(--muted);
   font-size: 14px;
 }
 
-.footer-inner {
+.footer-grid {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
   align-items: center;
-  gap: var(--sp-5);
-  padding-top: var(--sp-5);
+  justify-content: space-between;
+  gap: var(--sp-6);
+  padding: var(--sp-6) 0;
   border-top: 1px solid var(--border);
 }
 
-.footer-inner span {
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.footer-brand img {
+  width: 42px;
+  height: 42px;
+  flex: none;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 1px solid var(--border-strong);
+}
+
+.footer-brand strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 16px;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.footer-location {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 500 11px/1.4 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.footer-location svg {
+  width: 13px;
+  height: 13px;
+  color: var(--primary);
+}
+
+.footer-highlights {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-6);
+}
+
+.footer-highlights strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 16px;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  margin-bottom: 2px;
+}
+
+.footer-highlights span {
+  font-size: 13px;
+}
+
+.footer-socials {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+}
+
+.footer-base {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding-top: var(--sp-5);
+  border-top: 1px solid var(--border);
   font: 500 12px var(--font-mono);
   letter-spacing: 0.06em;
 }
@@ -1502,8 +1652,6 @@ footer {
   .brand-name { display: none; }
 
   .hero { padding-top: 110px; gap: var(--sp-6); }
-  .hero-foot { justify-content: center; text-align: center; gap: var(--sp-4); }
-  .hero-meta { justify-content: center; gap: var(--sp-5); }
 
   .section-heading {
     flex-direction: column;
@@ -1522,7 +1670,9 @@ footer {
   .panel, .project-card, .github-card { padding: var(--sp-5); }
   .contact-card { padding: var(--sp-8) var(--sp-4); }
   .terminal-body { min-height: 300px; padding: var(--sp-4); font-size: 12px; }
-  .footer-inner { flex-direction: column; align-items: flex-start; }
+  .footer-grid { flex-direction: column; align-items: flex-start; gap: var(--sp-5); }
+  .footer-highlights { gap: var(--sp-5); }
+  .footer-base { flex-direction: column; gap: var(--sp-2); }
 }
 
 /* ═══ Preferenze di movimento ════════════════════════════════════════════ */
