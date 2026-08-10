@@ -940,10 +940,150 @@ section {
 
 /* ═══ Progetti ═══════════════════════════════════════════════════════════ */
 
-.projects {
+/* ─── Nastro orizzontale ───────────────────────────────────────────────────
+   Lo scorrimento è nativo: overflow-x più scroll-snap. L'inclinazione delle
+   card è una passata di trasformazioni calcolata in JS da scrollLeft, e le
+   trasformazioni non spostano il layout, quindi i punti di aggancio restano
+   dove sono. Senza JS, o con il movimento ridotto, resta un nastro piatto che
+   si scorre benissimo. */
+
+.rail {
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
+  gap: var(--sp-4);
+}
+
+.rail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+}
+
+.rail-hint {
+  font: 500 12px var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.rail-buttons {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.rail-button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  transition: background var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out),
+    opacity var(--dur-fast) var(--ease-out);
+}
+
+.rail-button:hover:not(:disabled) {
+  background: var(--surface-strong);
+  border-color: var(--primary-line);
+  color: var(--primary);
+}
+
+.rail-button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.rail-button svg {
+  width: 19px;
+  height: 19px;
+}
+
+/* Il viewport è a tutta larghezza: le card sfumano oltre il bordo dello schermo
+   invece di fermarsi al contenitore, che è ciò che fa sembrare il nastro lungo. */
+.rail-viewport {
+  /* Una sola misura per larghezza della card e spazio laterale: se non
+     coincidono, a fine corsa l'ultima card non arriva al centro e resta
+     inclinata e sbiadita proprio quando dovrebbe essere quella a fuoco. */
+  --rail-card: clamp(280px, 30vw, 380px);
+  --rail-card-wide: clamp(300px, 40vw, 520px);
+  /* Quanto serve perché la prima e l'ultima card arrivino al centro. */
+  --rail-edge: max(var(--sp-5), calc(50vw - var(--rail-card) / 2));
+
+  /* position: relative non è decorativo — rende questo elemento l'offsetParent
+     delle card, così il loro offsetLeft e lo scrollLeft del nastro sono nello
+     stesso sistema di riferimento. Senza, il centro calcolato in JS è spostato
+     di un offset costante e la card a fuoco non è mai quella al centro. */
+  position: relative;
+  overflow-x: auto;
+  overflow-y: hidden;
+  /* proximity, non mandatory: con card di larghezze diverse l'aggancio
+     obbligatorio non lascia raggiungere l'ultima posizione, e impedisce di
+     fermarsi fra due card per confrontarle. Qui il nastro è contenuto da
+     leggere, non un carosello a una card per volta. */
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  /* A destra non c'è padding: Chrome non conta il padding finale di un
+     contenitore flex scorrevole nella corsa di scorrimento, e l'ultima card
+     non arriverebbe mai al centro. Lì fa il lavoro un distanziatore vero. */
+  padding: var(--sp-5) 0 var(--sp-5) var(--rail-edge);
+  perspective: 1500px;
+}
+
+.rail-viewport::-webkit-scrollbar { display: none; }
+
+.rail-viewport:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+  border-radius: var(--r-md);
+}
+
+.rail-track {
+  display: flex;
+  align-items: stretch;
   gap: var(--sp-5);
+  transform-style: preserve-3d;
+}
+
+.rail-track::after {
+  content: "";
+  flex: none;
+  /* Il gap aggiunge già uno spazio prima del distanziatore: va sottratto,
+     altrimenti l'ultima card supera il centro di una spanna. */
+  width: calc(var(--rail-edge) - var(--sp-5));
+}
+
+.rail-item {
+  flex: none;
+  width: var(--rail-card);
+  scroll-snap-align: center;
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+}
+
+.rail-item[data-size="large"] {
+  width: var(--rail-card-wide);
+}
+
+.rail-item > .project-card {
+  height: 100%;
+}
+
+.rail-progress {
+  position: relative;
+  height: 3px;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.07);
+  overflow: hidden;
+}
+
+.rail-progress > span {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--cyan-500), var(--violet-500));
 }
 
 .project-card {
@@ -967,8 +1107,6 @@ section {
   background: var(--surface-strong);
 }
 
-.project-card.large { grid-column: span 7; }
-.project-card.small { grid-column: span 5; }
 
 /* Alone di accento del progetto, in basso a destra. */
 .project-card::after {
@@ -1631,8 +1769,12 @@ footer {
   }
 
   .github-card { gap: var(--sp-6); }
-  .project-card.large,
-  .project-card.small { grid-column: span 12; }
+  /* Su schermi stretti tutte le card del nastro hanno la stessa larghezza: la
+     differenza fra large e small si nota solo quando ne stanno più di una. */
+  .rail-viewport {
+    --rail-card: min(78vw, 400px);
+    --rail-card-wide: min(78vw, 400px);
+  }
   .services-grid { grid-template-columns: repeat(2, 1fr); }
   .beyond-grid { grid-template-columns: repeat(2, 1fr); }
 }
@@ -1698,4 +1840,9 @@ footer {
   .beyond-card:hover {
     transform: none;
   }
+
+  /* Con il movimento ridotto la passata JS non gira: le card restano piatte,
+     quindi va azzerata anche la prospettiva o resterebbe un residuo di scorcio. */
+  .rail-viewport { perspective: none; }
+  .rail-viewport { scroll-behavior: auto; }
 }

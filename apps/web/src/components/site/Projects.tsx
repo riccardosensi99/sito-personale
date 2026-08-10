@@ -1,5 +1,5 @@
 import { AlertTriangle } from 'lucide-react';
-import { ProjectCard, ProjectCardSkeleton } from './ProjectCard';
+import { ProjectRail } from './ProjectRail';
 import type { Project } from '../../lib/types';
 
 type Props = { projects: Project[]; loading: boolean; error: string | null };
@@ -29,24 +29,17 @@ export function Projects({ projects, loading, error }: Props) {
             {error}
           </div>
         )}
-
-        <div className="projects">
-          {loading ? (
-            <>
-              <ProjectCardSkeleton size="large" />
-              <ProjectCardSkeleton size="small" />
-            </>
-          ) : projects.length === 0 ? (
-            <div className="empty-state">
-              Nessun progetto pubblicato al momento. Torna a trovarmi tra poco.
-            </div>
-          ) : (
-            projects.map((project, i) => (
-              <ProjectCard key={project.id} project={project} index={i} />
-            ))
-          )}
-        </div>
       </div>
+
+      {!loading && projects.length === 0 ? (
+        <div className="container">
+          <div className="empty-state">
+            Nessun progetto pubblicato al momento. Torna a trovarmi tra poco.
+          </div>
+        </div>
+      ) : (
+        <ProjectRail projects={projects} loading={loading} />
+      )}
     </section>
   );
 }
