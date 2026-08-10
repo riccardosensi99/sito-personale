@@ -64,7 +64,13 @@ export function ProjectRail({ projects, loading }: Props) {
       return centre;
     });
 
-    const viewportCentre = viewport.scrollLeft + viewport.clientWidth / 2;
+    // Il fuoco non è la metà dello schermo ma il punto di riposo della prima
+    // card, cioè il bordo del contenitore più mezza card. È la stessa scelta
+    // dell'allineamento a sinistra: a scorrimento zero la prima card è piatta
+    // e piena, e le altre sfumano verso destra.
+    const focus =
+      viewport.scrollLeft + padLeft + (cards[0]?.offsetWidth ?? viewport.clientWidth) / 2;
+
     const first = centres[0] ?? 0;
     const last = centres[centres.length - 1] ?? 0;
     // Il passo medio vero, non scrollWidth/n: quello includerebbe lo spazio
@@ -72,7 +78,7 @@ export function ProjectRail({ projects, loading }: Props) {
     const pitch = centres.length > 1 ? (last - first) / (centres.length - 1) : viewport.clientWidth;
 
     cards.forEach((card, i) => {
-      const steps = ((centres[i] ?? 0) - viewportCentre) / (pitch || 1);
+      const steps = ((centres[i] ?? 0) - focus) / (pitch || 1);
       const distance = Math.abs(steps);
       const ramp = Math.pow(distance, FALLOFF);
 

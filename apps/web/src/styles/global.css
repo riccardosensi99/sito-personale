@@ -995,8 +995,11 @@ section {
      inclinata e sbiadita proprio quando dovrebbe essere quella a fuoco. */
   --rail-card: clamp(280px, 30vw, 380px);
   --rail-card-wide: clamp(300px, 40vw, 520px);
-  /* Quanto serve perché la prima e l'ultima card arrivino al centro. */
-  --rail-edge: max(var(--sp-5), calc(50vw - var(--rail-card) / 2));
+  /* Il nastro parte dal bordo del contenitore, non dal centro dello schermo:
+     centrando la prima card, con pochi progetti restavano centinaia di pixel
+     di nulla fra il titolo della sezione e la prima card. Questa misura
+     ricalcola il margine del .container, così le due cose si allineano. */
+  --rail-edge: max(var(--sp-5), calc((100vw - var(--container)) / 2));
 
   /* position: relative non è decorativo — rende questo elemento l'offsetParent
      delle card, così il loro offsetLeft e lo scrollLeft del nastro sono nello
@@ -1010,10 +1013,14 @@ section {
      fermarsi fra due card per confrontarle. Qui il nastro è contenuto da
      leggere, non un carosello a una card per volta. */
   scroll-snap-type: x proximity;
+  /* L'aggancio è su "start", quindi va rientrato di quanto rientra il nastro:
+     così una card si ferma esattamente nel punto di riposo della prima, che è
+     anche il fuoco dell'inclinazione. */
+  scroll-padding-left: var(--rail-edge);
   scrollbar-width: none;
   /* A destra non c'è padding: Chrome non conta il padding finale di un
-     contenitore flex scorrevole nella corsa di scorrimento, e l'ultima card
-     non arriverebbe mai al centro. Lì fa il lavoro un distanziatore vero. */
+     contenitore flex scorrevole nella corsa di scorrimento, quindi l'ultima
+     card resterebbe schiacciata al bordo. Lì fa il lavoro un distanziatore. */
   padding: var(--sp-5) 0 var(--sp-5) var(--rail-edge);
   perspective: 1500px;
 }
@@ -1033,18 +1040,19 @@ section {
   transform-style: preserve-3d;
 }
 
+/* Chiude il nastro sul bordo destro del contenitore, simmetrico al padding
+   iniziale. Il gap aggiunge già uno spazio prima del distanziatore: va
+   sottratto, altrimenti il nastro finisce più larga del contenitore. */
 .rail-track::after {
   content: "";
   flex: none;
-  /* Il gap aggiunge già uno spazio prima del distanziatore: va sottratto,
-     altrimenti l'ultima card supera il centro di una spanna. */
-  width: calc(var(--rail-edge) - var(--sp-5));
+  width: max(0px, calc(var(--rail-edge) - var(--sp-5)));
 }
 
 .rail-item {
   flex: none;
   width: var(--rail-card);
-  scroll-snap-align: center;
+  scroll-snap-align: start;
   transform-style: preserve-3d;
   will-change: transform, opacity;
 }
@@ -1776,6 +1784,8 @@ footer {
   :root { --sp-9: 72px; --sp-8: 48px; }
 
   .container { width: calc(100% - 2 * var(--sp-4)); }
+  /* Il contenitore qui ha un margine più stretto: il nastro lo segue. */
+  .rail-viewport { --rail-edge: var(--sp-4); }
   .nav { top: var(--sp-2); width: calc(100% - var(--sp-4)); }
   .brand-name { display: none; }
 
