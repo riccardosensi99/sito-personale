@@ -29,8 +29,9 @@ export function Terminal({ terminal }: Props) {
           <div className="response">{'{'}</div>
           {entries.map((row, i) => (
             <div className="response" key={row.key}>
-              &nbsp;&nbsp;"{row.key}": [{row.values.map((v) => `"${v}"`).join(', ')}]
-              {i < entries.length - 1 ? ',' : ''}
+              {`  "${row.key}": [${row.values.map((v) => `"${v}"`).join(', ')}]${
+                i < entries.length - 1 ? ',' : ''
+              }`}
             </div>
           ))}
           <div className="response">{'}'}</div>

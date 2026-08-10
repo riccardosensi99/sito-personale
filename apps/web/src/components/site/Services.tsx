@@ -1,3 +1,4 @@
+import { ServiceIcon } from '../../lib/serviceIcons';
 import type { ServiceItem } from '../../lib/types';
 
 export function Services({ services }: { services: ServiceItem[] }) {
@@ -17,9 +18,7 @@ export function Services({ services }: { services: ServiceItem[] }) {
         <div className="services-grid">
           {services.map((s) => (
             <div className="service-card reveal" key={s.title}>
-              <div className="service-icon" aria-hidden="true">
-                {s.icon}
-              </div>
+              <ServiceIcon icon={s.icon} />
               <h3>{s.title}</h3>
               <p>{s.text}</p>
             </div>

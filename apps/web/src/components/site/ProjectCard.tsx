@@ -1,14 +1,21 @@
 import type { CSSProperties } from 'react';
+import { ArrowUpRight, Code2, Star } from 'lucide-react';
 import type { Project } from '../../lib/types';
 
-type Props = { project: Project; index: number };
+type Props = { project: Project; index: number; inRail?: boolean };
 
-export function ProjectCard({ project, index }: Props) {
+export function ProjectCard({ project, index, inRail = false }: Props) {
   const style = { '--project-accent': project.accentColor } as CSSProperties;
   const isWide = project.size === 'large';
 
+  // Nel nastro la larghezza la decide il contenitore scorrevole e la comparsa la
+  // gestisce lo scorrimento: né classi di colonna né .reveal, che lascerebbe
+  // invisibili le card fuori dal bordo destro.
   return (
-    <article className={`project-card ${project.size} reveal`} style={style}>
+    <article
+      className={`project-card${inRail ? '' : ` ${project.size} reveal`}`}
+      style={style}
+    >
       <div className="project-top">
         <span className="project-index">
           {String(index + 1).padStart(2, '0')} / {project.categoryLabel}
@@ -32,42 +39,46 @@ export function ProjectCard({ project, index }: Props) {
       <div className="project-links">
         {project.repoUrl && (
           <a href={project.repoUrl} target="_blank" rel="noreferrer">
-            Codice ↗
+            Codice <ArrowUpRight aria-hidden="true" />
           </a>
         )}
         {project.homepageUrl && (
           <a href={project.homepageUrl} target="_blank" rel="noreferrer">
-            Live ↗
+            Live <ArrowUpRight aria-hidden="true" />
           </a>
         )}
         {project.stars > 0 && (
           <span className="project-stat">
-            ★ {project.stars}
+            <Star aria-hidden="true" /> {project.stars}
             <span className="sr-only">stelle su GitHub</span>
           </span>
         )}
-        {project.language && <span className="project-stat">{project.language}</span>}
+        {project.language && (
+          <span className="project-stat">
+            <Code2 aria-hidden="true" /> {project.language}
+          </span>
+        )}
       </div>
 
       <div className="project-preview">
-        {project.imageUrl ? (
-          <img
-            src={project.imageUrl}
-            alt={`Anteprima di ${project.title}`}
-            loading="lazy"
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
-        ) : (
-          // Nessuno screenshot caricato: resta il mockup astratto del design originale.
-          <div className="preview-window" style={isWide ? undefined : { gridTemplateColumns: '1fr' }}>
-            {isWide && <div className="preview-sidebar" />}
-            <div className="preview-content">
-              <div />
-              <div />
-              <div />
+        <div className="project-preview-inner">
+          {project.imageUrl ? (
+            <img src={project.imageUrl} alt={`Anteprima di ${project.title}`} loading="lazy" />
+          ) : (
+            // Nessuno screenshot caricato: resta il mockup astratto del design originale.
+            <div
+              className="preview-window"
+              style={isWide ? undefined : { gridTemplateColumns: '1fr' }}
+            >
+              {isWide && <div className="preview-sidebar" />}
+              <div className="preview-content">
+                <div />
+                <div />
+                <div />
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </article>
   );
@@ -81,7 +92,9 @@ export function ProjectCardSkeleton({ size }: { size: 'large' | 'small' }) {
       <div className="skeleton skeleton-line" />
       <div className="skeleton skeleton-line" />
       <div className="skeleton skeleton-line short" />
-      <div className="skeleton project-preview" />
+      <div className="project-preview">
+        <div className="skeleton project-preview-inner" />
+      </div>
     </article>
   );
 }

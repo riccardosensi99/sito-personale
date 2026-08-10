@@ -30,7 +30,7 @@ export default function Home() {
     <>
       <Nav />
       <main id="top">
-        <Hero hero={settings.hero} terminal={settings.terminal} githubUrl={settings.contact.github} />
+        <Hero hero={settings.hero} terminal={settings.terminal} />
         <Projects projects={projects} loading={loading} error={error} />
         <Services services={settings.services} />
         <About timeline={settings.timeline} techRadar={settings.techRadar} />
@@ -38,7 +38,7 @@ export default function Home() {
         <Beyond items={settings.beyond} />
         <Contact contact={settings.contact} />
       </main>
-      <Footer />
+      <Footer contact={settings.contact} highlights={settings.hero.highlights} />
     </>
   );
 }
