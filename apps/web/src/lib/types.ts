@@ -56,6 +56,10 @@ export type RepoSummary = {
 export type HeroSettings = {
   available: boolean;
   availableLabel: string;
+  /// Le due parole del claim gigante accanto al logo. Corte: sopra le ~7 lettere
+  /// il tipo si rimpicciolisce e l'effetto poster si perde.
+  claimLead: string;
+  claimTrail: string;
   titleLead: string;
   titleAccent: string;
   copy: string;

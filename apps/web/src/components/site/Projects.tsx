@@ -1,3 +1,4 @@
+import { AlertTriangle } from 'lucide-react';
 import { ProjectCard, ProjectCardSkeleton } from './ProjectCard';
 import type { Project } from '../../lib/types';
 
@@ -22,7 +23,12 @@ export function Projects({ projects, loading, error }: Props) {
           </p>
         </div>
 
-        {error && <div className="load-error">{error}</div>}
+        {error && (
+          <div className="load-error" role="status">
+            <AlertTriangle aria-hidden="true" />
+            {error}
+          </div>
+        )}
 
         <div className="projects">
           {loading ? (

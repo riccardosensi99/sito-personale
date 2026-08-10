@@ -1,3 +1,5 @@
+import { Mail } from 'lucide-react';
+import { LinkedinIcon } from './BrandIcons';
 import type { ContactSettings } from '../../lib/types';
 
 export function Contact({ contact }: { contact: ContactSettings }) {
@@ -14,10 +16,12 @@ export function Contact({ contact }: { contact: ContactSettings }) {
           <p>{contact.copy}</p>
           <div className="hero-actions">
             <a className="btn btn-primary" href={`mailto:${contact.email}`}>
-              Scrivimi una mail ↗
+              <Mail aria-hidden="true" />
+              Scrivimi una mail
             </a>
             <a className="btn btn-secondary" href={contact.linkedin} target="_blank" rel="noreferrer">
-              LinkedIn ↗
+              <LinkedinIcon aria-hidden="true" />
+              LinkedIn
             </a>
           </div>
         </div>

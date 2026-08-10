@@ -3,7 +3,7 @@ export function Footer() {
     <footer>
       <div className="container footer-inner">
         <div>© {new Date().getFullYear()} Riccardo Sensi. Built with React, Node and curiosity.</div>
-        <div>Italy · Full Stack · Flutter · AI</div>
+        <span>ITALY · FULL STACK · FLUTTER · AI</span>
       </div>
     </footer>
   );

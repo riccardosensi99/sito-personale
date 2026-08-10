@@ -17,7 +17,9 @@ export function Beyond({ items }: { items: BeyondItem[] }) {
         <div className="beyond-grid">
           {items.map((item) => (
             <div className="beyond-card reveal" key={item.title}>
-              <span aria-hidden="true">{item.emoji}</span>
+              <span className="beyond-emoji" aria-hidden="true">
+                {item.emoji}
+              </span>
               <div>
                 <h3>{item.title}</h3>
                 <p>{item.text}</p>
