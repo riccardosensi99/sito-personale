@@ -1,0 +1,32 @@
+{
+  "name": "riccardosensi-site",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Sito personale e portfolio di Riccardo Sensi",
+  "workspaces": [
+    "apps/web",
+    "apps/api"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspaces --if-present",
+    "dev:web": "npm run dev -w @rs/web",
+    "dev:api": "npm run dev -w @rs/api",
+    "build": "npm run build -w @rs/api && npm run build -w @rs/web",
+    "seed": "tsx apps/api/prisma/seed.ts",
+    "migrate": "prisma migrate dev --schema apps/api/prisma/schema.prisma",
+    "generate": "prisma generate --schema apps/api/prisma/schema.prisma",
+    "studio": "prisma studio --schema apps/api/prisma/schema.prisma",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "allowScripts": {
+    "@prisma/client@6.19.3": true,
+    "argon2@0.41.1": true,
+    "prisma@6.19.3": true,
+    "@prisma/engines@6.19.3": true,
+    "esbuild@0.28.2": true,
+    "esbuild@0.25.12": true
+  }
+}

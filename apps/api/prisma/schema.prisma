@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Unico utente del sistema: creato dal seed, nessuna registrazione pubblica.
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  totpSecret   String
+  totpEnabled  Boolean   @default(true)
+  /// Incrementata per invalidare in blocco tutte le sessioni emesse.
+  tokenVersion Int       @default(0)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+/// Un progetto mostrato in home. I campi "github*" sono di sola sincronizzazione,
+/// i campi editoriali sono scritti a mano dal backoffice e non vengono mai sovrascritti.
+model Project {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  title         String
+  description   String
+  body          String?
+  categoryLabel String   @default("Progetto")
+  badge         String   @default("Full Stack")
+  accentColor   String   @default("#00c0af")
+  imageUrl      String?
+  size          String   @default("large")
+  tags          String[] @default([])
+  order         Int      @default(0)
+  visible       Boolean  @default(true)
+  featured      Boolean  @default(false)
+
+  githubRepoId Int?      @unique
+  repoUrl      String?
+  homepageUrl  String?
+  stars        Int       @default(0)
+  forks        Int       @default(0)
+  language     String?
+  topics       String[]  @default([])
+  pushedAt     DateTime?
+  lastSyncedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([visible, order])
+}
+
+/// Contenuti del sito modificabili senza deploy (hero, timeline, tech radar, social...).
+model Setting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+/// Cache dei numeri pubblici del profilo GitHub, aggiornata al massimo ogni 6 ore.
+model GithubStats {
+  id           Int      @id @default(1)
+  publicRepos  Int      @default(0)
+  totalStars   Int      @default(0)
+  followers    Int      @default(0)
+  topLanguages Json     @default("[]")
+  fetchedAt    DateTime @default(now())
+}

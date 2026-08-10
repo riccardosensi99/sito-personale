@@ -1,1 +1,137 @@
-sito-personale
+# riccardosensi.com
+
+Portfolio personale con backoffice privato: React + Vite davanti, Node/Express + PostgreSQL dietro,
+tutto in Docker. I progetti si importano dai repository GitHub e si curano dal backoffice, senza deploy.
+
+```
+apps/web    React 19 + Vite + React Router   sito pubblico + area admin (chunk separato)
+apps/api    Express 5 + Prisma + PostgreSQL  API pubbliche e admin
+docker/     Dockerfile e configurazione nginx
+docs/       il mock HTML da cui nasce il design
+```
+
+## Avvio rapido
+
+```bash
+cp .env.example .env          # poi apri il file e metti i tuoi valori
+openssl rand -hex 48          # → JWT_SECRET
+
+docker compose -f docker-compose.dev.yml up      # db + api + web con hot reload
+npm run seed                                     # crea l'admin e stampa il QR del TOTP
+```
+
+Sito su <http://localhost:5174>, API su <http://localhost:3000>, database sulla porta 5434.
+
+**Il QR del secret TOTP viene mostrato una volta sola.** Scansionalo con Google Authenticator, Aegis
+o 1Password prima di chiudere il terminale: senza secondo fattore non si entra nel backoffice.
+
+### Sviluppo senza container
+
+```bash
+docker compose -f docker-compose.dev.yml up db   # solo il database
+npm run dev:api                                  # in un terminale
+npm run dev:web                                  # in un altro
+```
+
+## Comandi
+
+| Comando | Cosa fa |
+|---|---|
+| `npm run dev:api` / `npm run dev:web` | avvia API o frontend sull'host |
+| `npm run migrate` | crea e applica una migration dopo aver toccato lo schema Prisma |
+| `npm run seed` | crea l'admin (se manca) e i contenuti di default del sito |
+| `npm run studio` | apre Prisma Studio sul database |
+| `npm run build` | build di produzione di API e frontend |
+| `npm run typecheck` | typecheck di entrambi i workspace |
+
+## Il backoffice
+
+Vive su `/<VITE_ADMIN_PATH>` (default nell'esempio: `cn-riccardo-2f`). Il path segreto è solo il primo
+strato — il vero controllo è l'autenticazione:
+
+1. **Password** con hash argon2id, verificata anche quando l'email non esiste (i tempi di risposta non
+   rivelano quali account esistono).
+2. **Codice TOTP** a 6 cifre. Il cookie di sessione viene emesso solo dopo il secondo fattore.
+3. Cookie **httpOnly, Secure, SameSite=Strict**, valido 8 ore, con `tokenVersion` verificata a ogni
+   richiesta: `POST /api/admin/auth/revoke-sessions` invalida in un colpo tutte le sessioni aperte.
+4. **Rate limiting**: 5 tentativi di login ogni 15 minuti per IP, poi 429.
+5. nginx serve quel path con `X-Robots-Tag: noindex` e `Cache-Control: no-store`; la pagina aggiunge
+   un `<meta name="robots">` e non compare in `sitemap.xml`.
+
+Da lì gestisci: progetti (creazione, modifica, ordine con drag & drop, visibilità, upload immagini),
+import da GitHub e i contenuti testuali del sito (hero, servizi, esperienza, tech radar, contatti).
+
+### Come funziona l'import GitHub
+
+`Importa da GitHub` elenca i tuoi repository e ne crea una **bozza nascosta**: titolo, descrizione,
+topic e linguaggio vengono precompilati dai dati del repo. Da quel momento i campi editoriali sono
+tuoi: il pulsante `Refresh` riallinea **solo** stelle, fork, linguaggio, topics e data dell'ultimo
+push, senza mai riscrivere il testo che hai curato.
+
+Senza `GITHUB_TOKEN` vede i soli repository pubblici. Con un token (anche senza scope, o con
+`public_repo`) alza il rate limit; con `repo` vede anche i privati.
+
+## Variabili d'ambiente
+
+Tutto sta in un unico `.env` alla radice, condiviso da API, frontend e docker. Vedi `.env.example`
+per l'elenco completo; le più importanti:
+
+| Variabile | Note |
+|---|---|
+| `JWT_SECRET` | almeno 32 caratteri, generalo con `openssl rand -hex 48` |
+| `ADMIN_EMAIL` / `ADMIN_PASSWORD` | usate **solo dal seed** alla prima creazione dell'utente |
+| `VITE_ADMIN_PATH` | path del backoffice: cambiarlo sposta l'area admin (serve una nuova build) |
+| `GITHUB_USERNAME` / `GITHUB_TOKEN` | profilo da leggere e token opzionale |
+| `CORS_ORIGINS` | origini ammesse, separate da virgola |
+| `COOKIE_DOMAIN` | lascialo vuoto se sito e API stanno sullo stesso host |
+
+Le `VITE_*` finiscono dentro il bundle al momento della build: cambiandole va rifatto
+`docker compose build web`.
+
+## Deploy sul VPS
+
+```bash
+git clone <repo> && cd sito-personale
+cp .env.example .env    # valori di produzione, JWT_SECRET nuovo, password admin robusta
+docker compose up -d --build
+docker compose exec api npx tsx prisma/seed.ts   # solo la prima volta: crea admin e contenuti
+```
+
+Le migration vengono applicate a ogni avvio del container `api`, quindi un `docker compose up -d --build`
+dopo un `git pull` è tutto ciò che serve per aggiornare.
+
+Backup del database:
+
+```bash
+docker compose exec db pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB" > backup-$(date +%F).sql
+```
+
+Le immagini caricate vivono nel volume `uploads`, il database nel volume `pgdata`: entrambi
+sopravvivono a `docker compose down` (ma non a `down -v`).
+
+## Cloudflare
+
+Il dominio `riccardosensi.com` è già su Cloudflare. Configurazione consigliata:
+
+1. **DNS** — record `A` per `riccardosensi.com` e per `www` verso l'IP del VPS, entrambi con il
+   **proxy attivo** (nuvoletta arancione): l'IP di origine resta nascosto.
+2. **SSL/TLS** — modalità **Full (strict)**. Genera un *Origin Certificate* dal pannello Cloudflare e
+   installalo su nginx (oppure metti un reverse proxy con Let's Encrypt davanti al container `web`);
+   la modalità Flexible va evitata, lascia il tratto Cloudflare→origine in chiaro.
+3. **Edge Certificates** — attiva `Always Use HTTPS` e `Automatic HTTPS Rewrites`; HSTS quando sei
+   sicuro che tutto viaggi su HTTPS.
+4. **Cache** — una regola che **esclude dalla cache** `/api/*` e il path del backoffice. Il resto può
+   essere messo in cache tranquillamente: gli asset hanno l'hash nel nome.
+5. **Firewall** (opzionale ma consigliato) — una regola che limita l'accesso al path del backoffice ai
+   soli IP o Paesi da cui accedi davvero, oppure Cloudflare Access con un secondo login.
+
+L'API legge `X-Forwarded-For` (`trust proxy`), quindi il rate limiting vede l'IP reale del visitatore e
+non quello dell'edge Cloudflare.
+
+## Note
+
+- Il design nasce da `docs/preview.html`: il CSS è stato portato in `apps/web/src/styles/global.css`
+  mantenendo le stesse classi, così il mock resta il riferimento visivo.
+- I contenuti testuali sono in tabella `Setting` come blocchi JSON. Sono **array e non oggetti** dove
+  l'ordine conta: `jsonb` di Postgres riordina le chiavi degli oggetti, non gli elementi degli array.
+- Il form di contatto è un `mailto:`, non c'è un endpoint server-side.

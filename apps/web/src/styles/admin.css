@@ -1,0 +1,303 @@
+/* Backoffice: stessa palette del sito, densità da pannello di controllo. */
+
+.admin-boot {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-family: "JetBrains Mono", monospace;
+}
+
+.admin-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 250px 1fr;
+}
+
+.admin-sidebar {
+  border-right: 1px solid var(--border);
+  background: rgba(8, 12, 20, 0.72);
+  padding: 26px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.admin-nav { display: grid; gap: 4px; }
+
+.admin-nav a {
+  padding: 11px 14px;
+  border-radius: 12px;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.admin-nav a:hover { background: rgba(255,255,255,.05); color: var(--text); }
+.admin-nav a.active { background: var(--primary-soft); color: #80f4e9; }
+
+.admin-user {
+  margin-top: auto;
+  font-size: 13px;
+  color: var(--muted);
+  display: grid;
+  gap: 10px;
+}
+
+.admin-main { padding: 34px 32px 80px; max-width: 1100px; }
+
+.admin-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.admin-head h1 { margin: 0; font-size: 34px; letter-spacing: -.04em; }
+.admin-head p { margin: 8px 0 0; color: var(--muted); font-size: 14px; }
+
+/* ─── Login ──────────────────────────────────────────────────────────────── */
+
+.login-screen {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.login-card {
+  width: min(100%, 420px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: rgba(255,255,255,.045);
+  backdrop-filter: blur(18px);
+  padding: 34px;
+  box-shadow: var(--shadow);
+}
+
+.login-card h1 { font-size: 26px; margin: 18px 0 6px; letter-spacing: -.04em; }
+.login-card > p { color: var(--muted); margin: 0 0 26px; font-size: 14px; line-height: 1.6; }
+
+/* ─── Form ───────────────────────────────────────────────────────────────── */
+
+.field { display: grid; gap: 8px; margin-bottom: 18px; }
+
+.field > label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #cbd4dc;
+}
+
+.field .hint { font-size: 12px; color: var(--muted); }
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="url"],
+input[type="number"],
+textarea,
+select {
+  width: 100%;
+  min-height: 46px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,.28);
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+  transition: border-color .2s ease;
+}
+
+textarea { min-height: 110px; resize: vertical; line-height: 1.6; }
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: rgba(0,192,175,.55);
+}
+
+input[type="color"] {
+  width: 56px;
+  height: 46px;
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,.28);
+}
+
+.code-input {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 24px !important;
+  letter-spacing: .5em;
+  text-align: center;
+}
+
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #cbd4dc;
+  cursor: pointer;
+}
+
+.checkbox input { width: 18px; height: 18px; min-height: 0; accent-color: var(--primary); }
+
+.btn-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 26px; }
+
+button.btn { cursor: pointer; font-family: inherit; font-size: 14px; }
+button.btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--muted);
+}
+
+.btn-danger {
+  background: rgba(255,107,107,.12);
+  border-color: rgba(255,107,107,.35);
+  color: #ffc9c9;
+}
+
+.btn-sm { min-height: 38px; padding: 0 14px; border-radius: 11px; font-size: 13px; }
+
+/* ─── Messaggi ───────────────────────────────────────────────────────────── */
+
+.alert {
+  padding: 13px 15px;
+  border-radius: 12px;
+  font-size: 14px;
+  margin-bottom: 18px;
+  line-height: 1.5;
+}
+
+.alert-error { background: rgba(255,107,107,.1); border: 1px solid rgba(255,107,107,.32); color: #ffc9c9; }
+.alert-ok { background: rgba(81,216,138,.1); border: 1px solid rgba(81,216,138,.32); color: #b6f0cd; }
+.alert-info { background: rgba(78,161,255,.1); border: 1px solid rgba(78,161,255,.3); color: #c6dfff; }
+
+/* ─── Liste ──────────────────────────────────────────────────────────────── */
+
+.admin-list { display: grid; gap: 12px; }
+
+.admin-row {
+  display: grid;
+  grid-template-columns: 30px 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.admin-row.dragging { opacity: .45; }
+.admin-row.drop-target { border-color: var(--primary); }
+
+.drag-handle {
+  cursor: grab;
+  color: var(--muted);
+  font-size: 18px;
+  user-select: none;
+  text-align: center;
+}
+
+.admin-row h3 { margin: 0 0 5px; font-size: 17px; letter-spacing: -.02em; }
+.admin-row p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+
+.row-meta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 9px; }
+
+.pill {
+  font: 500 11px "JetBrains Mono", monospace;
+  padding: 5px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,.25);
+  color: #c6d0da;
+}
+
+.pill.on { border-color: rgba(81,216,138,.4); color: #9ce8b8; }
+.pill.off { border-color: rgba(255,107,107,.35); color: #ffb3b3; }
+
+.row-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+
+.dot-accent {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  vertical-align: -1px;
+  margin-right: 6px;
+}
+
+/* ─── Import GitHub ──────────────────────────────────────────────────────── */
+
+.repo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+
+.repo-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.repo-card h3 { margin: 0; font-size: 16px; }
+.repo-card p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; flex: 1; }
+.repo-card .row-meta { margin-top: 0; }
+
+/* ─── Editor settings ────────────────────────────────────────────────────── */
+
+.settings-editor textarea {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+  min-height: 260px;
+}
+
+.settings-keys { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+
+.settings-keys button {
+  font: 600 13px "Inter", sans-serif;
+  padding: 9px 13px;
+  border-radius: 11px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.04);
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.settings-keys button.active { border-color: rgba(0,192,175,.5); color: #80f4e9; background: var(--primary-soft); }
+
+/* ─── Anteprima card nel form ────────────────────────────────────────────── */
+
+.form-layout { display: grid; grid-template-columns: 1fr 420px; gap: 28px; align-items: start; }
+.form-preview { position: sticky; top: 34px; }
+.form-preview .project-card { min-height: 0; }
+/* Nell'anteprima non gira l'IntersectionObserver: la card deve essere subito visibile. */
+.form-preview .reveal { opacity: 1; transform: none; }
+.form-preview .project-card:hover { transform: none; }
+
+@media (max-width: 1100px) {
+  .form-layout { grid-template-columns: 1fr; }
+  .form-preview { position: static; }
+}
+
+@media (max-width: 860px) {
+  .admin-shell { grid-template-columns: 1fr; }
+  .admin-sidebar { position: static; height: auto; flex-direction: row; align-items: center; flex-wrap: wrap; }
+  .admin-nav { grid-auto-flow: column; }
+  .admin-user { margin-top: 0; margin-left: auto; }
+  .admin-main { padding: 24px 18px 60px; }
+  .repo-grid { grid-template-columns: 1fr; }
+  .admin-row { grid-template-columns: 24px 1fr; }
+  .row-actions { grid-column: 1 / -1; justify-content: flex-start; }
+  .field-row { grid-template-columns: 1fr; }
+}
