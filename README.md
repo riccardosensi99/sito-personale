@@ -33,16 +33,46 @@ npm run dev:api                                  # in un terminale
 npm run dev:web                                  # in un altro
 ```
 
+## Ambienti
+
+Tre ambienti, ognuno con la propria directory, il proprio `.env` e i propri volumi.
+Il project name docker è ciò che li tiene separati: sbagliarlo significa scrivere sui dati di
+un altro ambiente.
+
+| | dove | branch | project docker | indirizzo |
+|---|---|---|---|---|
+| **local** | il tuo PC | working tree | `riccardosensi` | `localhost:8080` |
+| **staging** | server, `~/sito-personale-staging` | `develop` | `riccardosensi-staging` | `staging.riccardosensi.com` |
+| **prod** | server, `~/sito-personale` | `main` | `riccardosensi` | `riccardosensi.com` |
+
+local e prod condividono il nome del progetto ma stanno su macchine diverse, quindi non si
+toccano; staging convive con prod sullo stesso server e ha perciò un nome suo, che gli arriva da
+`COMPOSE_PROJECT_NAME` nel suo `.env`.
+
+Il flusso è: lavori in locale → merge su `develop` → `make deploy-staging` → merge su `main` →
+`make deploy-prod`.
+
 ## Comandi
+
+`make help` elenca tutto. I più usati:
 
 | Comando | Cosa fa |
 |---|---|
-| `npm run dev:api` / `npm run dev:web` | avvia API o frontend sull'host |
-| `npm run migrate` | crea e applica una migration dopo aver toccato lo schema Prisma |
-| `npm run seed` | crea l'admin (se manca) e i contenuti di default del sito |
-| `npm run studio` | apre Prisma Studio sul database |
-| `npm run build` | build di produzione di API e frontend |
-| `npm run typecheck` | typecheck di entrambi i workspace |
+| `make dev` | stack locale con hot reload (db + api + web) |
+| `make up` | avvia o aggiorna l'ambiente della directory corrente |
+| `make logs S=api` | segue i log di un servizio |
+| `make seed` | crea admin e contenuti di default (idempotente) |
+| `make migrate NAME=aggiunta_campo` | nuova migration Prisma |
+| `make typecheck` | typecheck di api e web |
+| `make env-check` | verifica che il `.env` corrente sia coerente |
+| `make bootstrap-staging` | crea l'ambiente di staging sul server (una volta sola) |
+| `make deploy-staging` | porta `develop` su staging |
+| `make deploy-prod` | porta `main` in produzione |
+| `make backup-prod` | scarica un dump del database di produzione in `backup/` |
+| `make ps-prod` / `make logs-prod` | stato e log della produzione, via SSH |
+
+Il server di riferimento è in cima al `Makefile` (`REMOTE`): cambialo lì, o passalo a mano con
+`make deploy-prod REMOTE=utente@altro-host`.
 
 ## Il backoffice
 

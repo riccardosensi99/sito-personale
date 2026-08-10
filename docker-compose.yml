@@ -1,6 +1,7 @@
-# Project name esplicito: senza, dev e prod condividerebbero lo stesso progetto docker
-# e un `down` sull'uno fermerebbe i container dell'altro.
-name: riccardosensi
+# Project name esplicito: senza, gli ambienti condividerebbero lo stesso progetto
+# docker e un `down` sull'uno fermerebbe i container dell'altro. Staging lo
+# sovrascrive con COMPOSE_PROJECT_NAME nel suo .env.
+name: ${COMPOSE_PROJECT_NAME:-riccardosensi}
 
 services:
   db:

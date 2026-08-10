@@ -1,19 +1,27 @@
 #!/usr/bin/env bash
 #
-# Deploy di riccardosensi.com su un VPS, con Cloudflare Tunnel.
-# Idempotente: puoi rilanciarlo per aggiornare il sito senza perdere dati.
+# Primo avvio di un ambiente (produzione o staging) su un server.
+# Idempotente: puoi rilanciarlo per aggiornare senza perdere dati — anche se per
+# gli aggiornamenti di tutti i giorni conviene `make deploy-prod` / `make deploy-staging`.
 #
 #   curl -fsSL https://raw.githubusercontent.com/riccardosensi99/sito-personale/main/scripts/deploy-vps.sh -o deploy.sh
 #   chmod +x deploy.sh && ./deploy.sh
 #
-# Il token del tunnel può arrivare dall'ambiente per evitare di digitarlo:
-#   CLOUDFLARE_TUNNEL_TOKEN=eyJ... ./deploy.sh
+# Tutto può arrivare dall'ambiente, così lo script gira senza domande:
+#   CLOUDFLARE_TUNNEL_TOKEN=eyJ...   token del tunnel (vuoto = niente tunnel)
+#   APP_DIR=~/sito-personale-staging directory di destinazione
+#   BRANCH=develop                   branch da servire
+#   PROJECT=riccardosensi-staging    nome del progetto docker (isola i volumi)
+#   SITE_URL=https://staging.riccardosensi.com
+#   WEB_PORT=8084                    porta pubblicata sul loopback
 
 set -euo pipefail
 
 REPO_URL="${REPO_URL:-https://github.com/riccardosensi99/sito-personale.git}"
 APP_DIR="${APP_DIR:-$HOME/sito-personale}"
-COMPOSE=(docker compose -f docker-compose.yml -f docker-compose.tunnel.yml)
+BRANCH="${BRANCH:-main}"
+PROJECT="${PROJECT:-riccardosensi}"
+SITE_URL="${SITE_URL:-https://riccardosensi.com}"
 
 info()  { printf '\n\033[1;36m▸ %s\033[0m\n' "$*"; }
 warn()  { printf '\033[1;33m! %s\033[0m\n' "$*"; }
@@ -29,11 +37,13 @@ docker info >/dev/null 2>&1 || die "l'utente corrente non può usare docker:  su
 # ─── Codice ──────────────────────────────────────────────────────────────────
 
 if [ -d "$APP_DIR/.git" ]; then
-  info "Aggiorno il codice in $APP_DIR"
-  git -C "$APP_DIR" pull --ff-only
+  info "Aggiorno il codice in $APP_DIR (branch $BRANCH)"
+  git -C "$APP_DIR" fetch origin "$BRANCH"
+  git -C "$APP_DIR" checkout "$BRANCH"
+  git -C "$APP_DIR" reset --hard "origin/$BRANCH"
 else
-  info "Clono il repository in $APP_DIR"
-  git clone "$REPO_URL" "$APP_DIR"
+  info "Clono il repository in $APP_DIR (branch $BRANCH)"
+  git clone -b "$BRANCH" "$REPO_URL" "$APP_DIR"
 fi
 
 cd "$APP_DIR"
@@ -45,10 +55,13 @@ if [ -f .env ]; then
 else
   info "Creo il .env di produzione"
 
+  # Il tunnel è opzionale: senza token l'ambiente resta raggiungibile solo dal
+  # server (utile per staging finché non gli dai un hostname pubblico).
   token="${CLOUDFLARE_TUNNEL_TOKEN:-}"
-  while [ -z "$token" ]; do
-    read -rp "Token del Cloudflare Tunnel: " token
-  done
+  if [ -z "$token" ] && [ -t 0 ]; then
+    read -rp "Token del Cloudflare Tunnel (invio per saltare): " token
+  fi
+  [ -n "$token" ] || warn "nessun token: niente tunnel, l'ambiente sarà solo locale al server"
 
   admin_email="${ADMIN_EMAIL:-riccardosensi57@gmail.com}"
   if [ -z "${ADMIN_EMAIL:-}" ] && [ -t 0 ]; then
@@ -98,7 +111,9 @@ else
   fi
 
   cat > .env <<EOF
-# Generato da scripts/deploy-vps.sh il $(date +%F)
+# Generato da scripts/deploy-vps.sh il $(date +%F) — branch $BRANCH
+
+COMPOSE_PROJECT_NAME=$PROJECT
 
 POSTGRES_USER=rs
 POSTGRES_PASSWORD=$db_pass
@@ -109,7 +124,7 @@ NODE_ENV=production
 API_PORT=3000
 JWT_SECRET=$jwt
 COOKIE_DOMAIN=
-CORS_ORIGINS=https://riccardosensi.com,https://www.riccardosensi.com
+CORS_ORIGINS=$SITE_URL
 UPLOAD_DIR=/data/uploads
 
 ADMIN_EMAIL=$admin_email
@@ -120,7 +135,7 @@ GITHUB_TOKEN=
 
 VITE_API_URL=/api
 VITE_ADMIN_PATH=$admin_path
-VITE_SITE_URL=https://riccardosensi.com
+VITE_SITE_URL=$SITE_URL
 
 # nginx solo sul loopback: al mondo esterno ci pensa il tunnel, che raggiunge
 # il container sulla rete interna. La porta pubblicata serve solo per i test dal server.
@@ -132,9 +147,15 @@ EOF
   chmod 600 .env
 fi
 
-grep -q '^CLOUDFLARE_TUNNEL_TOKEN=.\+' .env || die "CLOUDFLARE_TUNNEL_TOKEN mancante nel .env"
-
 # ─── Avvio ───────────────────────────────────────────────────────────────────
+
+# Gli stessi flag che usa il Makefile: project name dal .env, cloudflared solo se
+# c'è un token da usare.
+project="$(grep -s '^COMPOSE_PROJECT_NAME=' .env | cut -d= -f2-)"
+COMPOSE=(docker compose -p "${project:-riccardosensi}" -f docker-compose.yml)
+if grep -qE '^CLOUDFLARE_TUNNEL_TOKEN=.+' .env; then
+  COMPOSE+=(-f docker-compose.tunnel.yml)
+fi
 
 info "Costruisco e avvio i container (la prima volta ci vogliono alcuni minuti)"
 "${COMPOSE[@]}" up -d --build
@@ -156,17 +177,19 @@ info "Creo utente admin e contenuti di default (se mancano)"
 
 admin_path="$(grep '^VITE_ADMIN_PATH=' .env | cut -d= -f2-)"
 admin_email="$(grep '^ADMIN_EMAIL=' .env | cut -d= -f2-)"
+site_url="$(grep '^VITE_SITE_URL=' .env | cut -d= -f2-)"
+web_port="$(grep '^WEB_PORT=' .env | cut -d= -f2-)"
 
 info "Fatto"
 cat <<EOF
 
-  Sito        https://riccardosensi.com
-  Backoffice  https://riccardosensi.com/$admin_path
+  Sito        $site_url   (dal server: http://127.0.0.1:$web_port)
+  Backoffice  $site_url/$admin_path
   Accesso     $admin_email  —  password:  grep ADMIN_PASSWORD $APP_DIR/.env
 
-  Stato       ${COMPOSE[*]} ps
-  Log tunnel  ${COMPOSE[*]} logs -f cloudflared
-  Aggiorna    ./deploy.sh
+  Stato       cd $APP_DIR && make ps
+  Log         cd $APP_DIR && make logs
+  Aggiorna    make deploy-prod (o deploy-staging) dal tuo PC
 
   Se sopra è comparso un QR code, scansionalo ORA con l'app authenticator:
   non verrà mostrato di nuovo.
