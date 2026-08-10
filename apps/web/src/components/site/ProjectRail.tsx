@@ -18,6 +18,7 @@ type Props = { projects: Project[]; loading: boolean };
 /// non è un coverflow.
 const TILT_DEG = 14;
 const DEPTH_PX = 90;
+const PERSPECTIVE_PX = 1500;
 const FALLOFF = 0.7;
 const FADE = 0.18;
 
@@ -82,8 +83,12 @@ export function ProjectRail({ projects, loading }: Props) {
       const distance = Math.abs(steps);
       const ramp = Math.pow(distance, FALLOFF);
 
+      // perspective() dentro la transform, non sull'antenato: con perspective
+      // sul viewport e preserve-3d sulla pista, Chrome non fa più combaciare il
+      // hit test con il rendering e le card dopo la prima diventano incliccabili.
       card.style.transform =
-        `translateZ(${-DEPTH_PX * ramp}px) rotateY(${-TILT_DEG * ramp * Math.sign(steps)}deg)`;
+        `perspective(${PERSPECTIVE_PX}px) translateZ(${-DEPTH_PX * ramp}px) ` +
+        `rotateY(${-TILT_DEG * ramp * Math.sign(steps)}deg)`;
       card.style.opacity = String(Math.max(0.32, 1 - FADE * distance));
     });
   }, []);
