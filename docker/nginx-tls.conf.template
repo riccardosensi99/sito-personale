@@ -1,0 +1,46 @@
+# Variante HTTPS per Cloudflare in modalità Full (strict): l'origine espone un
+# certificato Cloudflare Origin, quindi anche il tratto Cloudflare → VPS è cifrato.
+# Attivala con:  docker compose -f docker-compose.yml -f docker-compose.tls.yml up -d
+#
+# I certificati vanno in ./certs sul VPS (montata read-only su /etc/nginx/certs):
+#   certs/origin.pem   il certificato Origin generato dal pannello Cloudflare
+#   certs/origin.key   la relativa chiave privata
+
+map $request_uri $robots_tag {
+  default                "";
+  ~^/${ADMIN_PATH}       "noindex, nofollow, noarchive";
+}
+
+map $request_uri $html_cache {
+  default                "no-cache";
+  ~^/${ADMIN_PATH}       "no-store";
+}
+
+# Protocollo visto dal visitatore: quello dichiarato da Cloudflare se c'è, altrimenti il nostro.
+map $http_x_forwarded_proto $fwd_proto {
+  default  $scheme;
+  "~.+"    $http_x_forwarded_proto;
+}
+
+# Tutto quello che arriva in chiaro viene rimandato su HTTPS.
+server {
+  listen 80;
+  server_name _;
+  server_tokens off;
+  return 301 https://$host$request_uri;
+}
+
+server {
+  listen 443 ssl;
+  http2 on;
+  server_name _;
+
+  ssl_certificate     /etc/nginx/certs/origin.pem;
+  ssl_certificate_key /etc/nginx/certs/origin.key;
+  ssl_protocols       TLSv1.2 TLSv1.3;
+  ssl_ciphers         HIGH:!aNULL:!MD5;
+  ssl_session_cache   shared:SSL:10m;
+  ssl_session_timeout 1d;
+
+  include /etc/nginx/snippets/site-locations.conf;
+}

@@ -1,0 +1,17 @@
+# Override per servire HTTPS direttamente dall'origine (Cloudflare Full strict).
+#
+#   docker compose -f docker-compose.yml -f docker-compose.tls.yml up -d
+#
+# Prerequisito: ./certs/origin.pem e ./certs/origin.key sul VPS (Cloudflare →
+# SSL/TLS → Origin Server → Create Certificate).
+
+services:
+  web:
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - uploads:/data/uploads:ro
+      - ./certs:/etc/nginx/certs:ro
+      # Sostituisce il template HTTP con quello che termina il TLS.
+      - ./docker/nginx-tls.conf.template:/etc/nginx/templates/default.conf.template:ro

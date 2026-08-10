@@ -91,9 +91,34 @@ Le `VITE_*` finiscono dentro il bundle al momento della build: cambiandole va ri
 ## Deploy sul VPS
 
 ```bash
-git clone <repo> && cd sito-personale
+git clone git@github.com:riccardosensi99/sito-personale.git && cd sito-personale
 cp .env.example .env    # valori di produzione, JWT_SECRET nuovo, password admin robusta
-docker compose up -d --build
+```
+
+Poi scegli **uno** dei due modi per esporre il sito.
+
+### A. Cloudflare Tunnel (consigliato)
+
+Nessuna porta aperta sul VPS e nessun certificato da gestire: `cloudflared` apre una connessione
+in uscita verso Cloudflare e riceve il traffico da lì.
+
+```bash
+# nel .env:  CLOUDFLARE_TUNNEL_TOKEN=<token>   e   WEB_BIND=127.0.0.1
+docker compose -f docker-compose.yml -f docker-compose.tunnel.yml up -d --build
+```
+
+### B. Porte aperte + certificato di origine
+
+nginx termina il TLS sulla 443 con un *Origin Certificate* Cloudflare, e il DNS punta all'IP del VPS.
+
+```bash
+mkdir -p certs   # dentro: origin.pem e origin.key
+docker compose -f docker-compose.yml -f docker-compose.tls.yml up -d --build
+```
+
+### In entrambi i casi
+
+```bash
 docker compose exec api npx tsx prisma/seed.ts   # solo la prima volta: crea admin e contenuti
 ```
 
@@ -111,19 +136,24 @@ sopravvivono a `docker compose down` (ma non a `down -v`).
 
 ## Cloudflare
 
-Il dominio `riccardosensi.com` è già su Cloudflare. Configurazione consigliata:
+Il dominio `riccardosensi.com` è già su Cloudflare.
 
-1. **DNS** — record `A` per `riccardosensi.com` e per `www` verso l'IP del VPS, entrambi con il
-   **proxy attivo** (nuvoletta arancione): l'IP di origine resta nascosto.
-2. **SSL/TLS** — modalità **Full (strict)**. Genera un *Origin Certificate* dal pannello Cloudflare e
-   installalo su nginx (oppure metti un reverse proxy con Let's Encrypt davanti al container `web`);
-   la modalità Flexible va evitata, lascia il tratto Cloudflare→origine in chiaro.
-3. **Edge Certificates** — attiva `Always Use HTTPS` e `Automatic HTTPS Rewrites`; HSTS quando sei
-   sicuro che tutto viaggi su HTTPS.
-4. **Cache** — una regola che **esclude dalla cache** `/api/*` e il path del backoffice. Il resto può
-   essere messo in cache tranquillamente: gli asset hanno l'hash nel nome.
-5. **Firewall** (opzionale ma consigliato) — una regola che limita l'accesso al path del backoffice ai
-   soli IP o Paesi da cui accedi davvero, oppure Cloudflare Access con un secondo login.
+**Con il tunnel (opzione A)** non si tocca il DNS a mano: creando il tunnel in
+*Zero Trust → Networks → Tunnels* e aggiungendo i public hostname `riccardosensi.com` e
+`www.riccardosensi.com` con servizio `HTTP → web:80`, i record `CNAME` li scrive Cloudflare.
+
+**Con le porte aperte (opzione B)** servono due record `A`, per `riccardosensi.com` e per `www`,
+verso l'IP del VPS, entrambi con il **proxy attivo** (nuvoletta arancione) e la modalità SSL/TLS
+su **Full (strict)**. La modalità Flexible va evitata: lascia il tratto Cloudflare→origine in chiaro.
+
+Valgono per entrambe:
+
+- **Edge Certificates** — attiva `Always Use HTTPS` e `Automatic HTTPS Rewrites`; HSTS quando sei
+  sicuro che tutto viaggi su HTTPS.
+- **Cache** — una regola che **esclude dalla cache** `/api/*` e il path del backoffice. Il resto può
+  essere messo in cache tranquillamente: gli asset hanno l'hash nel nome.
+- **Firewall** (opzionale ma consigliato) — una regola che limita l'accesso al path del backoffice ai
+  soli IP o Paesi da cui accedi davvero, oppure Cloudflare Access con un secondo login.
 
 L'API legge `X-Forwarded-For` (`trust proxy`), quindi il rate limiting vede l'IP reale del visitatore e
 non quello dell'edge Cloudflare.

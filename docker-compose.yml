@@ -64,7 +64,9 @@ services:
       ADMIN_PATH: ${VITE_ADMIN_PATH}
       NGINX_ENVSUBST_FILTER: ADMIN_PATH
     ports:
-      - '${WEB_PORT:-80}:80'
+      # Con Cloudflare Tunnel imposta WEB_BIND=127.0.0.1: nginx resta raggiungibile
+      # solo dal server stesso e nessuna porta va aperta sul firewall.
+      - '${WEB_BIND:-0.0.0.0}:${WEB_PORT:-80}:80'
     volumes:
       # Sola lettura: nginx serve gli upload, a scriverli ci pensa solo l'API.
       - uploads:/data/uploads:ro

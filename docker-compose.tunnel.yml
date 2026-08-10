@@ -1,0 +1,20 @@
+# Override per pubblicare il sito con Cloudflare Tunnel invece che aprendo le porte.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.tunnel.yml up -d
+#
+# cloudflared apre una connessione in uscita verso Cloudflare: il VPS non ha bisogno
+# di porte aperte in ingresso, né di certificati sull'origine (il TLS lo termina
+# Cloudflare, e il tratto edge → server viaggia dentro il tunnel).
+#
+# Prerequisiti nel .env:
+#   CLOUDFLARE_TUNNEL_TOKEN=<token del tunnel, da Zero Trust → Networks → Tunnels>
+#   WEB_BIND=127.0.0.1     così nginx ascolta solo sul loopback del server
+
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    depends_on:
+      - web
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    # Nessuna porta pubblicata: la connessione parte da qui verso Cloudflare.

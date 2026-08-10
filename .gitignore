@@ -12,3 +12,4 @@ coverage/
 data/
 uploads/
 apps/api/generated/
+certs/

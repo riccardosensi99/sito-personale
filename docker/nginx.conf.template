@@ -1,3 +1,7 @@
+# Variante HTTP: l'origine parla in chiaro e la cifratura verso il visitatore la mette
+# Cloudflare. Va bene in locale e con Cloudflare in modalità Flexible — per Full (strict)
+# usa docker-compose.tls.yml, che monta nginx-tls.conf.template al posto di questo.
+#
 # Reso da envsubst all'avvio del container: l'unica variabile sostituita è ${ADMIN_PATH}
 # (NGINX_ENVSUBST_FILTER nel compose evita che tocchi $uri, $host e simili).
 
@@ -13,69 +17,15 @@ map $request_uri $html_cache {
   ~^/${ADMIN_PATH}       "no-store";
 }
 
+# Protocollo visto dal visitatore: quello dichiarato da Cloudflare se c'è, altrimenti il nostro.
+map $http_x_forwarded_proto $fwd_proto {
+  default  $scheme;
+  "~.+"    $http_x_forwarded_proto;
+}
+
 server {
   listen 80;
   server_name _;
-  root /usr/share/nginx/html;
-  index index.html;
 
-  # Cloudflare fa già da CDN, ma comprimere all'origine costa poco.
-  gzip on;
-  gzip_vary on;
-  gzip_min_length 1024;
-  gzip_types text/plain text/css application/javascript application/json image/svg+xml application/xml;
-
-  server_tokens off;
-  client_max_body_size 8m;
-
-  include /etc/nginx/snippets/security-headers.conf;
-
-  # Gli asset hanno l'hash nel nome: possono restare in cache per sempre.
-  location /assets/ {
-    include /etc/nginx/snippets/security-headers.conf;
-    add_header Cache-Control "public, max-age=31536000, immutable" always;
-    try_files $uri =404;
-  }
-
-  location = /favicon.svg {
-    include /etc/nginx/snippets/security-headers.conf;
-    add_header Cache-Control "public, max-age=604800" always;
-  }
-
-  location = /robots.txt {
-    include /etc/nginx/snippets/security-headers.conf;
-    add_header Cache-Control "public, max-age=86400" always;
-  }
-
-  location = /sitemap.xml {
-    include /etc/nginx/snippets/security-headers.conf;
-    add_header Cache-Control "public, max-age=86400" always;
-  }
-
-  # Immagini caricate dal backoffice, dal volume condiviso con l'API.
-  location /uploads/ {
-    include /etc/nginx/snippets/security-headers.conf;
-    alias /data/uploads/;
-    add_header Cache-Control "public, max-age=2592000" always;
-    try_files $uri =404;
-  }
-
-  location /api/ {
-    proxy_pass http://api:3000;
-    proxy_http_version 1.1;
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_read_timeout 60s;
-  }
-
-  # SPA: ogni rotta non statica la risolve React. Il backoffice esce di qui con
-  # X-Robots-Tag noindex e Cache-Control no-store grazie alle map qui sopra.
-  location / {
-    include /etc/nginx/snippets/security-headers.conf;
-    add_header X-Robots-Tag $robots_tag always;
-    add_header Cache-Control $html_cache always;
-    try_files $uri $uri/ /index.html;
-  }
+  include /etc/nginx/snippets/site-locations.conf;
 }
