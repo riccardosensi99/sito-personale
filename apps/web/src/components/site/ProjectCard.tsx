@@ -2,14 +2,20 @@ import type { CSSProperties } from 'react';
 import { ArrowUpRight, Code2, Star } from 'lucide-react';
 import type { Project } from '../../lib/types';
 
-type Props = { project: Project; index: number };
+type Props = { project: Project; index: number; inRail?: boolean };
 
-export function ProjectCard({ project, index }: Props) {
+export function ProjectCard({ project, index, inRail = false }: Props) {
   const style = { '--project-accent': project.accentColor } as CSSProperties;
   const isWide = project.size === 'large';
 
+  // Nel nastro la larghezza la decide il contenitore scorrevole e la comparsa la
+  // gestisce lo scorrimento: né classi di colonna né .reveal, che lascerebbe
+  // invisibili le card fuori dal bordo destro.
   return (
-    <article className={`project-card ${project.size} reveal`} style={style}>
+    <article
+      className={`project-card${inRail ? '' : ` ${project.size} reveal`}`}
+      style={style}
+    >
       <div className="project-top">
         <span className="project-index">
           {String(index + 1).padStart(2, '0')} / {project.categoryLabel}
