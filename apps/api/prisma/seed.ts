@@ -6,8 +6,12 @@ import { config } from 'dotenv';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+// Come in src/env.ts: .env.local per lo sviluppo, .env come ripiego, e nei
+// container vince comunque ciò che è già nell'ambiente.
 const here = path.dirname(fileURLToPath(import.meta.url));
-config({ path: path.resolve(here, '../../../.env') });
+for (const file of ['.env.local', '.env']) {
+  config({ path: path.resolve(here, '../../..', file) });
+}
 
 const prisma = new PrismaClient();
 

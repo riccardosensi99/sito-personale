@@ -3,11 +3,14 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { z } from 'zod';
 
-// In sviluppo l'unico .env sta alla radice del monorepo; in container le variabili
-// arrivano già dall'ambiente e questa lettura non trova (giustamente) nessun file.
+// In sviluppo il file dell'ambiente sta alla radice del monorepo; nei container le
+// variabili arrivano già dall'ambiente e questa lettura non trova (giustamente) nulla.
+// dotenv non sovrascrive ciò che è già definito, quindi il primo file vince.
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(here, '../../..');
-config({ path: path.join(repoRoot, '.env') });
+for (const file of ['.env.local', '.env']) {
+  config({ path: path.join(repoRoot, file) });
+}
 
 const schema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),

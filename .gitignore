@@ -1,9 +1,12 @@
 node_modules/
 dist/
 build/
+
+# Configurazione degli ambienti: mai nel repo, solo il template
 .env
 .env.*
 !.env.example
+
 *.log
 npm-debug.log*
 .DS_Store
