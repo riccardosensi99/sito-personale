@@ -84,6 +84,19 @@ else
   db_pass="$(openssl rand -base64 24 | tr -d '/+=' | cut -c1-24)"
   jwt="$(openssl rand -hex 48)"
 
+  # Su un server che ospita già altri siti la 80 può essere presa: cerco la prima libera.
+  web_port="${WEB_PORT:-}"
+  if [ -z "$web_port" ]; then
+    for candidate in 80 8081 8082 8083 8084; do
+      if ! ss -ltn 2>/dev/null | grep -qE "[:.]$candidate\$|[:.]$candidate "; then
+        web_port="$candidate"
+        break
+      fi
+    done
+    web_port="${web_port:-8085}"
+    [ "$web_port" = 80 ] || warn "porta 80 occupata, pubblico nginx sulla $web_port (il tunnel non ne risente)"
+  fi
+
   cat > .env <<EOF
 # Generato da scripts/deploy-vps.sh il $(date +%F)
 
@@ -109,9 +122,10 @@ VITE_API_URL=/api
 VITE_ADMIN_PATH=$admin_path
 VITE_SITE_URL=https://riccardosensi.com
 
-# nginx solo sul loopback: al mondo esterno ci pensa il tunnel
-WEB_BIND=127.0.0.1
-WEB_PORT=80
+# nginx solo sul loopback: al mondo esterno ci pensa il tunnel, che raggiunge
+# il container sulla rete interna. La porta pubblicata serve solo per i test dal server.
+WEB_BIND=${WEB_BIND:-127.0.0.1}
+WEB_PORT=$web_port
 CLOUDFLARE_TUNNEL_TOKEN=$token
 EOF
 
