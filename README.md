@@ -52,6 +52,33 @@ toccano; staging convive con prod sullo stesso server e ha perciò un nome suo, 
 Il flusso è: lavori in locale → merge su `develop` → `make deploy-staging` → merge su `main` →
 `make deploy-prod`.
 
+### Quale home serve un ambiente
+
+Le due direzioni visive convivono nello stesso codice e si scelgono per ambiente con
+`VITE_HOME_STYLE` nel suo `.env`:
+
+| valore | cosa serve su `/` |
+|---|---|
+| `dark` (default) | il sito storico, contenuti dal backoffice |
+| `light` | la direzione chiara |
+
+Qualunque sia l'impostazione, **entrambe restano raggiungibili**: `/classico` è sempre quella
+scura, `/lab` sempre quella chiara. Serve a confrontarle sullo stesso ambiente senza ricostruire.
+
+La variabile finisce dentro il bundle, quindi non basta riavviare: dopo averla cambiata va
+ricostruito il web.
+
+```bash
+make pull-env ENV=staging      # scarica il .env dal server
+# aggiungi o cambia VITE_HOME_STYLE=light
+make push-env ENV=staging      # rimandalo su
+make deploy-staging            # ricostruisce e riavvia
+```
+
+> `.env.local` è anche il file che Vite carica da solo in ogni build eseguito su questa macchina.
+> Una `VITE_*` scritta lì dentro vale quindi pure per `npm run dev:web` e `npm run build`, non
+> solo per `make up ENV=local`.
+
 ## Comandi
 
 `make help` elenca tutto. I più usati:
