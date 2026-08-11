@@ -1,12 +1,12 @@
 import type { CSSProperties } from 'react';
 import { ArrowUpRight, Code2, Star } from 'lucide-react';
 import type { Project } from '../../lib/types';
+import { ProjectCover } from './ProjectCover';
 
 type Props = { project: Project; index: number; inRail?: boolean };
 
 export function ProjectCard({ project, index, inRail = false }: Props) {
   const style = { '--project-accent': project.accentColor } as CSSProperties;
-  const isWide = project.size === 'large';
 
   // Nel nastro la larghezza la decide il contenitore scorrevole e la comparsa la
   // gestisce lo scorrimento: né classi di colonna né .reveal, che lascerebbe
@@ -65,18 +65,9 @@ export function ProjectCard({ project, index, inRail = false }: Props) {
           {project.imageUrl ? (
             <img src={project.imageUrl} alt={`Anteprima di ${project.title}`} loading="lazy" />
           ) : (
-            // Nessuno screenshot caricato: resta il mockup astratto del design originale.
-            <div
-              className="preview-window"
-              style={isWide ? undefined : { gridTemplateColumns: '1fr' }}
-            >
-              {isWide && <div className="preview-sidebar" />}
-              <div className="preview-content">
-                <div />
-                <div />
-                <div />
-              </div>
-            </div>
+            // Nessuno screenshot caricato: la cover si disegna dallo slug e
+            // dall'accento, così anche un progetto appena importato ne ha una.
+            <ProjectCover slug={project.slug} />
           )}
         </div>
       </div>
