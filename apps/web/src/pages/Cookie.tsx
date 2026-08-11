@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { ArrowUpRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useSeo } from '../lib/seo';
 import '../styles/site.css';
 
 /**
@@ -24,6 +25,13 @@ const COOKIE = [
 ];
 
 export default function Cookie() {
+  useSeo({
+    titolo: 'Cookie — Riccardo Sensi',
+    descrizione:
+      'Quali cookie usa questo sito, a cosa servono e come cancellarli: uno solo, tecnico, nessuna statistica e nessuna profilazione.',
+    path: '/cookie',
+  });
+
   useEffect(() => {
     document.documentElement.classList.add('site-mode');
     return () => document.documentElement.classList.remove('site-mode');

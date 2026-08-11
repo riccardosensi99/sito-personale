@@ -1,5 +1,10 @@
+# Il backoffice non compare qui: il suo path è configurabile proprio per non
+# essere noto, e scriverlo in un file pubblico lo renderebbe il primo posto dove
+# cercarlo. A tenerlo fuori dagli indici è l'header X-Robots-Tag di nginx.
+
 User-agent: *
 Allow: /
+Disallow: /api/
 Disallow: /uploads/
 
 Sitemap: https://riccardosensi.com/sitemap.xml

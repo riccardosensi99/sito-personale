@@ -301,9 +301,15 @@
 
 /* ─── Bottoni ────────────────────────────────────────────────────────────── */
 
-/* global.css li disegna per il tema scuro, gradiente ciano compreso: qui si
-   ridipingono tutti, non solo quelli con una classe propria. */
+/* .btn esiste solo qui: global.css non dipinge niente, quindi la forma va data
+   per intero. inline-flex e non inline-block perché metà dei bottoni sono
+   <Link>, e un <a> senza display resta inline: dentro .btn-row diventa un
+   flex item alto 46px con la scritta appoggiata in cima invece che al centro. */
 .admin-mode .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   min-height: 46px;
   padding: 0 20px;
   border-radius: var(--adm-r-md);

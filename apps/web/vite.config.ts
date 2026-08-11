@@ -5,8 +5,20 @@ export default defineConfig(({ mode }) => {
   // Le variabili stanno nel .env alla radice del monorepo, condiviso con l'API e con docker.
   const env = loadEnv(mode, '../../', '');
 
+  // Canonical, og:url e og:image devono nominare l'ambiente in cui il bundle è
+  // stato costruito, non uno scritto a mano dentro index.html. Il valore manca
+  // solo in un build fatto senza .env: meglio la produzione di un %SITE_URL%
+  // lasciato a metà nell'HTML.
+  const siteUrl = (env.VITE_SITE_URL || 'https://riccardosensi.com').replace(/\/+$/, '');
+
   return {
-    plugins: [react()],
+    plugins: [
+      react(),
+      {
+        name: 'rs-site-url',
+        transformIndexHtml: (html) => html.replaceAll('%SITE_URL%', siteUrl),
+      },
+    ],
     envDir: '../../',
     server: {
       host: true,
