@@ -60,6 +60,11 @@ export type ContactSettings = {
 
 /// Tutto il testo della pagina, sezione per sezione. Nei campi lunghi valgono i
 /// marcatori di `lib/enfasi`: `_così_` per il corsivo, `*così*` per il grassetto.
+///
+/// Nei `kicker` il numero non va scritto: lo mette la home in base all'ordine
+/// delle sezioni, e uno scritto a mano viene tolto prima di stampare. Serve a
+/// non doverli rinumerare tutti, in ogni ambiente, ogni volta che una sezione
+/// nasce o cambia posto.
 export type HomeSettings = {
   nome: string;
   ruolo: string;
