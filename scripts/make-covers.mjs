@@ -47,6 +47,12 @@ function shell(accent, glow2, motif) {
       <stop offset="0" stop-color="${glow2}" stop-opacity="0.22"/>
       <stop offset="1" stop-color="${glow2}" stop-opacity="0"/>
     </radialGradient>
+    <!-- Alone d'appoggio dei motivi: sfumato, perche' un'ellisse a tinta piatta
+         lascia un bordo netto che si legge come un ovale sopra il fondo. -->
+    <radialGradient id="soft">
+      <stop offset="0" stop-color="${accent}" stop-opacity="0.17"/>
+      <stop offset="1" stop-color="${accent}" stop-opacity="0"/>
+    </radialGradient>
     <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
       <path d="M32 0H0v32" fill="none" stroke="#ffffff" stroke-opacity="0.05" stroke-width="1"/>
     </pattern>
@@ -156,7 +162,7 @@ function layers(accent, bright) {
   const diamond = (y, w, h) => `M${cx} ${r2(y - h)}L${cx + w} ${y}L${cx} ${r2(y + h)}L${cx - w} ${y}Z`;
   const out = [];
 
-  out.push(`  <ellipse cx="${cx}" cy="182" rx="150" ry="20" fill="${accent}" opacity="0.07"/>`);
+  out.push(`  <ellipse cx="${cx}" cy="182" rx="150" ry="22" fill="url(#soft)"/>`);
   ys.slice(0, -1).forEach((y) => {
     for (const x of [cx - hw, cx + hw]) {
       out.push(`  <path d="M${x} ${y}L${x} ${y + gap}" stroke="${accent}" stroke-opacity="0.16" stroke-width="1"/>`);
@@ -179,11 +185,69 @@ function layers(accent, bright) {
   return out.join('\n');
 }
 
+/* ── Quant lab: candele astratte attraversate da un segnale ─────────────── */
+function candles(accent, bright) {
+  const out = [];
+  const n = 17;
+  const x0 = 168;
+  const step = 19;
+  // Somma di seni al posto di un random: il disegno resta identico a ogni
+  // rigenerazione, senza dover portarsi dietro un seme.
+  const v = (i) =>
+    Math.min(0.94, Math.max(0.06, 0.5 + 0.3 * Math.sin(i * 0.55) + 0.16 * Math.sin(i * 1.31 + 1.1) + 0.08 * Math.sin(i * 2.6 + 0.4)));
+
+  out.push(`  <ellipse cx="320" cy="110" rx="200" ry="78" fill="url(#soft)"/>`);
+  for (let i = 0; i < n; i++) {
+    const x = x0 + i * step;
+    const cy = r2(180 - v(i) * 140);
+    const h = r2(14 + 18 * Math.abs(Math.sin(i * 0.9 + 0.3)));
+    const up = i > 0 && v(i) > v(i - 1);
+    const op = r2(0.22 + 0.4 * (1 - Math.abs(i - (n - 1) / 2) / ((n - 1) / 2)));
+    out.push(
+      `  <path d="M${x} ${r2(cy - h / 2 - 12)}L${x} ${r2(cy + h / 2 + 12)}" stroke="${accent}" stroke-opacity="${r2(op * 0.7)}" stroke-width="1"/>`,
+    );
+    out.push(
+      up
+        ? `  <rect x="${x - 3}" y="${r2(cy - h / 2)}" width="6" height="${h}" rx="2" fill="${bright}" opacity="${op}"/>`
+        : `  <rect x="${x - 2.5}" y="${r2(cy - h / 2)}" width="5" height="${h}" rx="2" fill="none" stroke="${accent}" stroke-opacity="${r2(op + 0.15)}" stroke-width="1.2"/>`,
+    );
+  }
+  const pts = [];
+  for (let x = 40; x <= 600; x += 8) pts.push(`${x} ${r2(112 - 40 * Math.sin(x * 0.0135 + 0.6))}`);
+  out.push(
+    `  <path d="M${pts.join('L')}" fill="none" stroke="${bright}" stroke-opacity="0.5" stroke-width="1.6" stroke-linecap="round"/>`,
+  );
+  return out.join('\n');
+}
+
+/* ── Sito personale: i pannelli del nastro, inclinati ────────────────────── */
+function panels(accent, bright) {
+  const out = [];
+  out.push('  <g transform="translate(320 110) skewY(-7) translate(-320 -110)">');
+  [170, 294, 418].forEach((x, i) => {
+    const mid = i === 1;
+    out.push(
+      `    <rect x="${x}" y="52" width="112" height="116" rx="14" fill="${accent}" fill-opacity="${mid ? 0.12 : 0.05}" stroke="${mid ? bright : accent}" stroke-opacity="${mid ? 0.7 : 0.34}" stroke-width="1.2"/>`,
+    );
+    out.push(
+      `    <rect x="${x + 16}" y="${mid ? 132 : 136}" width="${mid ? 52 : 38}" height="4" rx="2" fill="${mid ? bright : accent}" opacity="${mid ? 0.7 : 0.3}"/>`,
+    );
+  });
+  out.push('  </g>');
+  // Eco della .rail-progress sotto le card, con il tratto attivo al centro.
+  out.push(`  <rect x="120" y="192" width="400" height="3" rx="1.5" fill="${accent}" opacity="0.14"/>`);
+  out.push(`  <rect x="252" y="192" width="136" height="3" rx="1.5" fill="${bright}" opacity="0.6"/>`);
+  return out.join('\n');
+}
+
+/* I file prendono il nome dallo slug del progetto: il legame con imageUrl deve
+   restare leggibile. I motivi non usati qui (waves, graph) restano disponibili
+   per i progetti che verranno. */
 const covers = [
-  { file: 'gestionale.svg', accent: '#00c0af', glow2: '#7c5cff', motif: matrix },
-  { file: 'mobile.svg', accent: '#7c5cff', glow2: '#22c3e6', motif: waves },
-  { file: 'ai-agents.svg', accent: '#ff7a59', glow2: '#7c5cff', motif: graph },
-  { file: 'libreria-crud.svg', accent: '#4ea1ff', glow2: '#22c3e6', motif: layers },
+  { file: 'sito-personale.svg', accent: '#7c5cff', glow2: '#22c3e6', motif: panels },
+  { file: 'crud-lib.svg', accent: '#4ea1ff', glow2: '#22c3e6', motif: layers },
+  { file: 'gestionale-ore.svg', accent: '#00c0af', glow2: '#7c5cff', motif: matrix },
+  { file: 'tradingview-quant-lab.svg', accent: '#ff7a59', glow2: '#7c5cff', motif: candles },
 ];
 
 mkdirSync(OUT, { recursive: true });
