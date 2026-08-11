@@ -95,6 +95,12 @@ export default function Home() {
         email: `mailto:${contact.email}`,
         ...(home.piva ? { vatID: home.piva } : {}),
         knowsAbout: home.about.skills.map(({ title }) => title),
+        // I servizi sono la parte che un motore può capire davvero: dichiararli
+        // come offerte costa quattro righe e li rende leggibili come tali.
+        makesOffer: home.services.items.map(({ title, text }) => ({
+          '@type': 'Offer',
+          itemOffered: { '@type': 'Service', name: title, description: text },
+        })),
         sameAs: [contact.github, contact.linkedin].filter(Boolean),
       },
       {
@@ -222,6 +228,28 @@ export default function Home() {
           {projects.map((progetto, i) => (
             <Reveal key={progetto.id} delay={60 + i * 80}>
               <ProjectCard project={progetto} index={i} />
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* ═══ Servizi ═══ */}
+      {/* Dopo i progetti e prima dei contatti: prima si vede cos'è stato fatto,
+          poi cosa si può chiedere, e a quel punto la mail è a un dito. */}
+      <section className="site-section" id="servizi">
+        <Reveal>
+          <p className="site-kicker">{home.services.kicker}</p>
+          <h2 className="site-h2">{enfasi(home.services.title)}</h2>
+        </Reveal>
+
+        <div className="site-services">
+          {home.services.items.map(({ title, text }, i) => (
+            <Reveal key={title} delay={60 + i * 70}>
+              <div className="site-service">
+                <span className="site-service-num">{String(i + 1).padStart(2, '0')}</span>
+                <h3>{title}</h3>
+                <p>{text}</p>
+              </div>
             </Reveal>
           ))}
         </div>

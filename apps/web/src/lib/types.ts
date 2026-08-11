@@ -81,6 +81,9 @@ export type HomeSettings = {
     skills: { title: string; text: string }[];
   };
   projects: { kicker: string; title: string; empty: string };
+  /// Le voci si numerano da sole in base all'ordine: togliendone una in mezzo
+  /// non resta un buco, e non c'è un numero da tenere allineato a mano.
+  services: { kicker: string; title: string; items: { title: string; text: string }[] };
   contact: { kicker: string; title: string };
   piva: string;
 };

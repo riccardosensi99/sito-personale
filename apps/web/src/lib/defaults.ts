@@ -41,8 +41,33 @@ export const DEFAULT_SETTINGS: SiteSettings = {
       title: 'Cose che girano, non slide.',
       empty: 'Nessun progetto pubblicato al momento. Torna a trovarmi tra poco.',
     },
+    /// I testi di partenza non inventano niente: sono le stesse cose che il
+    /// sito già dichiara nel nastro, nelle competenze e nella bio, rimesse
+    /// nell'ordine in cui le cerca chi deve decidere se scrivere.
+    services: {
+      kicker: '03 — Servizi',
+      title: 'Quello per cui mi _chiamano_.',
+      items: [
+        {
+          title: 'Gestionali su misura',
+          text: 'Anagrafiche, ruoli, permessi e report: il software interno che prende il posto del foglio di calcolo condiviso, e che regge quando lo usano in dieci nello stesso momento.',
+        },
+        {
+          title: 'Web app e interfacce',
+          text: 'React e TypeScript davanti, Node e PostgreSQL dietro. Poche schermate che fanno esattamente ciò che serve, invece di una dashboard piena di grafici che nessuno guarda.',
+        },
+        {
+          title: 'Automazioni e agenti AI',
+          text: 'Integrazioni fra i servizi che già usi e procedure che tolgono lavoro ripetitivo, con i controlli al posto giusto perché un errore non si propaghi in silenzio.',
+        },
+        {
+          title: 'Messa in produzione',
+          text: 'Docker, nginx e deploy su server, con ambienti separati per provare prima di pubblicare. Un progetto non è finito quando compila: è finito quando gira.',
+        },
+      ],
+    },
     contact: {
-      kicker: '03 — Contatti',
+      kicker: '04 — Contatti',
       title: "Hai un'idea che _deve funzionare_?",
     },
     piva: '04030250544',
