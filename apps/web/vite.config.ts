@@ -1,8 +1,23 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 
+/**
+ * Le variabili stanno nel .env alla radice del monorepo, condiviso con l'API e
+ * con docker. Da lì arriva anche `NODE_ENV=development`, che per l'API è giusto
+ * e qui era un disastro: Vite legge NODE_ENV dai file d'ambiente e ci decide
+ * `isProduction`, da cui dipendono sia quale delle due copie di react-dom finisce
+ * nel bundle sia se il JSX viene compilato con le informazioni di debug. Bastava
+ * quella riga per costruire un sito che pesava il doppio del vero.
+ *
+ * Per questo lo script di build in package.json lancia `NODE_ENV=production vite
+ * build`: se la variabile è già nell'ambiente del processo, Vite non lascia che i
+ * file la sovrascrivano. Non si può rimediare da qui dentro — quando questa
+ * funzione viene chiamata, la decisione è già stata presa.
+ *
+ * In docker non si vedeva perché lì il .env non viene copiato: il build era
+ * giusto, e sbagliate erano solo le misure fatte sulla macchina di sviluppo.
+ */
 export default defineConfig(({ mode }) => {
-  // Le variabili stanno nel .env alla radice del monorepo, condiviso con l'API e con docker.
   const env = loadEnv(mode, '../../', '');
 
   // Canonical, og:url e og:image devono nominare l'ambiente in cui il bundle è
