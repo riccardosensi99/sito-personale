@@ -7,27 +7,10 @@ import Home from './pages/Home';
 // chi apre il sito pubblico non ne scarica nemmeno un byte.
 const AdminApp = lazy(() => import('./pages/admin/AdminApp'));
 
-// La direzione chiara, in un chunk suo: se non è lei la home, chi apre il sito
-// non ne scarica un byte finché non va a cercarla.
-const Lab = lazy(() => import('./pages/Lab'));
-const LabCookie = lazy(() => import('./pages/LabCookie'));
+// L'informativa la apre una persona su cento: non pesa sulla home.
+const Cookie = lazy(() => import('./pages/Cookie'));
 
 const ADMIN_PATH = (import.meta.env.VITE_ADMIN_PATH ?? 'admin').replace(/^\/+|\/+$/g, '');
-
-/**
- * Quale delle due home serve questo build.
- *
- * La scelta è al build e non a runtime perché le VITE_* vengono sostituite da
- * Vite dentro il bundle: il confronto qui sotto diventa una costante, e il ramo
- * che non serve sparisce. Il prezzo è che cambiare direzione richiede un nuovo
- * deploy — che è esattamente il modo in cui la si vuole cambiare, non per
- * sbaglio da un pannello.
- *
- * Le due home restano comunque raggiungibili entrambe, su /classico e /lab, in
- * qualunque modo sia impostata questa variabile: senza, scegliendone una si
- * perderebbe il modo di guardare l'altra sullo stesso ambiente.
- */
-const HOME_STYLE = import.meta.env.VITE_HOME_STYLE === 'light' ? 'light' : 'dark';
 
 const attesa = (node: ReactNode) => <Suspense fallback={null}>{node}</Suspense>;
 
@@ -38,12 +21,8 @@ export function App() {
     <MotionConfig reducedMotion="user">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={HOME_STYLE === 'light' ? attesa(<Lab />) : <Home />} />
-
-          {/* Le due direzioni, sempre visitabili per confronto. */}
-          <Route path="/classico" element={<Home />} />
-          <Route path="/lab" element={attesa(<Lab />)} />
-          <Route path="/lab/cookie" element={attesa(<LabCookie />)} />
+          <Route path="/" element={<Home />} />
+          <Route path="/cookie" element={attesa(<Cookie />)} />
 
           <Route
             path={`/${ADMIN_PATH}/*`}
@@ -53,6 +32,8 @@ export function App() {
               </Suspense>
             }
           />
+
+          {/* Comprese le vecchie /classico, /lab e /lab/cookie, che non esistono più. */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

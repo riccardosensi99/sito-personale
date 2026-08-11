@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { ArrowUpRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import '../styles/lab.css';
+import '../styles/site.css';
 
 /**
  * Informativa sui cookie.
@@ -23,41 +23,41 @@ const COOKIE = [
   },
 ];
 
-export default function LabCookie() {
+export default function Cookie() {
   useEffect(() => {
-    document.documentElement.classList.add('lab-mode');
-    return () => document.documentElement.classList.remove('lab-mode');
+    document.documentElement.classList.add('site-mode');
+    return () => document.documentElement.classList.remove('site-mode');
   }, []);
 
   return (
-    <div className="lab">
-      <div className="lab-doc">
-        <Link className="lab-doc-back" to="/lab">
+    <div className="site">
+      <div className="site-doc">
+        <Link className="site-doc-back" to="/">
           ← Torna al sito
         </Link>
 
-        <p className="lab-kicker">Informativa</p>
-        <h1 className="lab-h2 lab-h2--big">Cookie</h1>
+        <p className="site-kicker">Informativa</p>
+        <h1 className="site-h2 site-h2--big">Cookie</h1>
 
-        <p className="lab-lead">
+        <p className="site-lead">
           Questo sito usa un solo cookie, ed è tecnico: serve a far funzionare l’accesso all’area
           riservata. Non ci sono cookie di statistica, di profilazione o di terze parti, e nessun
           servizio esterno viene caricato dalle pagine pubbliche.
         </p>
-        <p className="lab-lead">
+        <p className="site-lead">
           Per i cookie tecnici la normativa non richiede consenso, perché senza di essi il servizio
           richiesto non può essere fornito. Richiede però che siano dichiarati: è quello che fa
           questa pagina.
         </p>
 
-        <h2 className="lab-doc-h3">Cosa viene impostato</h2>
+        <h2 className="site-doc-h3">Cosa viene impostato</h2>
 
-        <div className="lab-doc-table" role="table">
+        <div className="site-doc-table" role="table">
           {COOKIE.map((c) => (
-            <div className="lab-doc-row" role="row" key={c.nome}>
+            <div className="site-doc-row" role="row" key={c.nome}>
               <div>
                 <strong>{c.nome}</strong>
-                <span className="lab-doc-tag">{c.tipo}</span>
+                <span className="site-doc-tag">{c.tipo}</span>
               </div>
               <p>{c.scopo}</p>
               <dl>
@@ -74,25 +74,25 @@ export default function LabCookie() {
           ))}
         </div>
 
-        <h2 className="lab-doc-h3">Come cancellarlo</h2>
-        <p className="lab-lead">
+        <h2 className="site-doc-h3">Come cancellarlo</h2>
+        <p className="site-lead">
           Uscendo dall’area riservata il cookie viene rimosso dal server. In alternativa si può
           cancellare dalle impostazioni del browser, alla voce dati dei siti: è un’operazione che
           non pregiudica la consultazione del sito pubblico.
         </p>
 
-        <h2 className="lab-doc-h3">Se le cose cambiano</h2>
-        <p className="lab-lead">
+        <h2 className="site-doc-h3">Se le cose cambiano</h2>
+        <p className="site-lead">
           Se un domani venissero aggiunti strumenti di statistica o contenuti incorporati da altri
           siti, comparirebbe una richiesta di consenso preventiva, con il rifiuto altrettanto
           semplice dell’accettazione, e questa pagina verrebbe aggiornata di conseguenza.
         </p>
 
-        <h2 className="lab-doc-h3">Titolare</h2>
-        <p className="lab-lead">
+        <h2 className="site-doc-h3">Titolare</h2>
+        <p className="site-lead">
           Riccardo Sensi — P. IVA 04030250544.
           <br />
-          <a className="lab-doc-mail" href="mailto:riccardosensi57@gmail.com">
+          <a className="site-doc-mail" href="mailto:riccardosensi57@gmail.com">
             riccardosensi57@gmail.com <ArrowUpRight aria-hidden="true" />
           </a>
         </p>

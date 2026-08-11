@@ -83,7 +83,7 @@ export function Login({ onAuthenticated }: { onAuthenticated: () => void }) {
   return (
     <div className="login-screen">
       <div className="login-card">
-        <span className="brand-mark">RS</span>
+        <img className="brand-mark" src="/logo-mark.webp" width={256} height={256} alt="" />
 
         {step === 'password' ? (
           <form onSubmit={(e) => void submitPassword(e)}>

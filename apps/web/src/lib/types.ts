@@ -26,14 +26,6 @@ export type Project = {
   updatedAt: string;
 };
 
-export type GithubStats = {
-  publicRepos: number;
-  totalStars: number;
-  followers: number;
-  topLanguages: { name: string; count: number }[];
-  fetchedAt: string;
-};
-
 export type RepoSummary = {
   githubRepoId: number;
   name: string;
@@ -53,48 +45,48 @@ export type RepoSummary = {
 
 // ─── Settings: il contenuto editoriale del sito ──────────────────────────────
 
-export type HeroSettings = {
-  available: boolean;
-  availableLabel: string;
-  /// Le due parole del claim gigante accanto al logo. Corte: sopra le ~7 lettere
-  /// il tipo si rimpicciolisce e l'effetto poster si perde.
-  claimLead: string;
-  claimTrail: string;
-  titleLead: string;
-  titleAccent: string;
-  copy: string;
-  highlights: { title: string; text: string }[];
-};
+/// Il puntatore al PDF caricato dal backoffice. Può mancare, o essere `{}`
+/// quando il CV viene rimosso: chi lo legge deve controllare l'url, non la chiave.
+export type CvSettings = { url?: string; nome?: string; caricatoIl?: string };
 
-export type TerminalSettings = {
-  host: string;
-  /// Array e non oggetto: jsonb riordina le chiavi degli oggetti, e qui l'ordine
-  /// delle righe di stack.json conta.
-  stack: { key: string; values: string[] }[];
-  status: string;
-};
-
-export type ServiceItem = { icon: string; title: string; text: string };
-export type TimelineItem = { year: string; title: string; text: string };
-export type RadarItem = { label: string; tag: string; level: number };
-export type BeyondItem = { emoji: string; title: string; text: string };
-
+/// Solo i recapiti, e stanno in un blocco loro perché non sono testo di pagina:
+/// cambiano per conto proprio e finiscono in tre posti diversi (contatti, footer,
+/// pulsanti social).
 export type ContactSettings = {
-  kicker: string;
-  titleLead: string;
-  titleAccent: string;
-  copy: string;
   email: string;
   github: string;
   linkedin: string;
 };
 
+/// Tutto il testo della pagina, sezione per sezione. Nei campi lunghi valgono i
+/// marcatori di `lib/enfasi`: `_così_` per il corsivo, `*così*` per il grassetto.
+export type HomeSettings = {
+  nome: string;
+  ruolo: string;
+  /// La riga fissa sopra al titolo che si riscrive, in maiuscolo.
+  titleGhost: string;
+  /// Le parole che il titolo scrive e cancella a turno.
+  roles: string[];
+  bio: string;
+  ctaLabel: string;
+  stats: { value: string; label: string }[];
+  /// Le voci del nastro diagonale, ripetute in ciclo.
+  marquee: string[];
+  about: {
+    kicker: string;
+    title: string;
+    paragraphs: string[];
+    /// La riga staccata dal filetto d'accento, in fondo alla sezione.
+    note: string;
+    skills: { title: string; text: string }[];
+  };
+  projects: { kicker: string; title: string; empty: string };
+  contact: { kicker: string; title: string };
+  piva: string;
+};
+
 export type SiteSettings = {
-  hero: HeroSettings;
-  terminal: TerminalSettings;
-  services: ServiceItem[];
-  timeline: TimelineItem[];
-  techRadar: RadarItem[];
-  beyond: BeyondItem[];
+  home: HomeSettings;
   contact: ContactSettings;
+  cv?: CvSettings;
 };

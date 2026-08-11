@@ -33,8 +33,8 @@ export function CookieNotice() {
   const scelta = OPZIONALI.length > 0;
 
   return (
-    <div className="lab-cookie" role="dialog" aria-label="Informativa sui cookie">
-      <span className="lab-cookie-icon" aria-hidden="true">
+    <div className="site-cookie" role="dialog" aria-label="Informativa sui cookie">
+      <span className="site-cookie-icon" aria-hidden="true">
         <Cookie />
       </span>
 
@@ -52,18 +52,18 @@ export function CookieNotice() {
             nessun servizio di terzi: non c'è nulla da accettare.
           </>
         )}{' '}
-        <Link to="/lab/cookie">Leggi l'informativa</Link>
+        <Link to="/cookie">Leggi l'informativa</Link>
       </p>
 
-      <div className="lab-cookie-actions">
+      <div className="site-cookie-actions">
         {scelta ? (
           <>
-            <button type="button" className="lab-cookie-btn" onClick={() => decidi([])}>
+            <button type="button" className="site-cookie-btn" onClick={() => decidi([])}>
               Rifiuta
             </button>
             <button
               type="button"
-              className="lab-cookie-btn lab-cookie-btn--main"
+              className="site-cookie-btn site-cookie-btn--main"
               onClick={() => decidi(OPZIONALI)}
             >
               Accetta
@@ -72,7 +72,7 @@ export function CookieNotice() {
         ) : (
           <button
             type="button"
-            className="lab-cookie-btn lab-cookie-btn--main"
+            className="site-cookie-btn site-cookie-btn--main"
             onClick={() => decidi([])}
           >
             Ho capito

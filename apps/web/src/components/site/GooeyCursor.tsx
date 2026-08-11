@@ -21,7 +21,7 @@ const SIZES = [30, 26, 22, 18, 15, 12];
  * Serve un puntatore fine da inseguire. La query è any-pointer e non pointer:
  * su un portatile touch il dispositivo primario è grossolano anche quando c'è
  * un mouse collegato, e con `pointer` il cursore finto non partirebbe.
- * Deve restare identica a quella che in lab.css nasconde il cursore di sistema,
+ * Deve restare identica a quella che in site.css nasconde il cursore di sistema,
  * o si finisce senza nessuno dei due.
  */
 const FINE_POINTER = '(any-pointer: fine)';
@@ -36,7 +36,7 @@ export function GooeyCursor() {
     const root = layer.current;
     if (!root) return;
 
-    const blobs = Array.from(root.querySelectorAll<HTMLElement>('.lab-blob'));
+    const blobs = Array.from(root.querySelectorAll<HTMLElement>('.site-blob'));
     if (blobs.length === 0) return;
 
     // Con prefers-reduced-motion resta la sola testa, agganciata al puntatore:
@@ -107,12 +107,12 @@ export function GooeyCursor() {
   }, []);
 
   return (
-    <div className="lab-cursor" ref={layer} aria-hidden="true">
+    <div className="site-cursor" ref={layer} aria-hidden="true">
       {/* Il filtro sfoca e poi ritaglia l'alpha: le forme vicine si saldano,
           quelle lontane restano gocce separate. */}
-      <svg className="lab-cursor-defs" width="0" height="0">
+      <svg className="site-cursor-defs" width="0" height="0">
         <defs>
-          <filter id="lab-goo">
+          <filter id="site-goo">
             <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur" />
             <feColorMatrix
               in="blur"
@@ -123,11 +123,11 @@ export function GooeyCursor() {
         </defs>
       </svg>
 
-      <div className="lab-cursor-goo">
+      <div className="site-cursor-goo">
         {SIZES.map((size, i) => (
           <span
             key={size}
-            className={`lab-blob${i === 0 ? ' lab-blob--head' : ''}`}
+            className={`site-blob${i === 0 ? ' site-blob--head' : ''}`}
             style={{ width: size, height: size }}
           />
         ))}
@@ -135,7 +135,7 @@ export function GooeyCursor() {
 
       {/* Fuori dal filtro apposta: dentro, la sfocatura piu' la soglia sull'alpha
           chiuderebbero il buco dell'anello e ne farebbero un disco pieno. */}
-      <span className="lab-ring" />
+      <span className="site-ring" />
     </div>
   );
 }

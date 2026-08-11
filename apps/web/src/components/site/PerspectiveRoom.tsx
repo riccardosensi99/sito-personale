@@ -24,18 +24,18 @@ export function PerspectiveRoom() {
   });
 
   return (
-    <div className="lab-room" aria-hidden="true">
-      <div className="lab-room-stage">
+    <div className="site-room" aria-hidden="true">
+      <div className="site-room-stage">
         {frames.map(({ scale, delay }) => (
           <span
             key={scale}
-            className="lab-room-frame"
+            className="site-room-frame"
             style={{ '--frame-scale': scale, animationDelay: `${delay}s` } as React.CSSProperties}
           />
         ))}
         {/* I raggi partono dagli angoli e convergono: sono ciò che dà la
             profondità, le sole cornici leggerebbero come rettangoli piatti. */}
-        <svg className="lab-room-rays" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <svg className="site-room-rays" viewBox="0 0 100 100" preserveAspectRatio="none">
           <path d="M0 0L50 50M100 0L50 50M0 100L50 50M100 100L50 50" />
         </svg>
       </div>
