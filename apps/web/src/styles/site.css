@@ -956,6 +956,89 @@
 
 .site-cookie-btn--main:hover { background: #e8451a; border-color: #e8451a; }
 
+/* ═══ Copertina d'apertura ═══════════════════════════════════════════════ */
+
+/* Sulla radice, come .site-mode: il blocco deve valere sull'elemento che
+   scorre davvero, non sul contenuto. */
+.site-opening-on { overflow: hidden; }
+
+.site-opening {
+  position: fixed;
+  inset: 0;
+  /* Sopra tutto: pillola (40) e avviso cookie (60) compresi. */
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(16px, 4vh, 34px);
+  background: var(--site-bg);
+}
+
+/* In uscita si allarga appena mentre svanisce: dà l'idea di un sipario che si
+   apre invece di una luce che si spegne. Durata legata a USCITA in Opening.tsx. */
+.site-opening.is-leaving {
+  animation: site-opening-out 480ms cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
+@keyframes site-opening-out {
+  to {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+}
+
+.site-opening img {
+  width: clamp(118px, 30vw, 200px);
+  height: auto;
+  border-radius: 50%;
+  box-shadow: 0 26px 60px rgba(20, 17, 15, 0.22);
+  animation: site-opening-mark 760ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes site-opening-mark {
+  from {
+    opacity: 0;
+    transform: scale(0.84);
+  }
+}
+
+/* Le stesse due voci del titolo dell'hero: una che fa da ombra, una che è solo
+   contorno. La copertina e la prima schermata devono sembrare la stessa cosa. */
+.site-opening-words {
+  margin: 0;
+  text-align: center;
+  font-family: var(--site-display);
+  font-weight: 700;
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+}
+
+.site-opening-words span {
+  display: block;
+  animation: site-opening-word 640ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes site-opening-word {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+}
+
+.site-opening-ghost {
+  font-size: clamp(40px, 9vw, 88px);
+  color: rgba(20, 17, 15, 0.13);
+  animation-delay: 200ms;
+}
+
+.site-opening-live {
+  font-size: clamp(40px, 9vw, 88px);
+  color: transparent;
+  -webkit-text-stroke: 1.6px var(--site-accent);
+  animation-delay: 330ms;
+}
+
 /* ═══ Pagine di testo (informative) ══════════════════════════════════════ */
 
 .site-doc {

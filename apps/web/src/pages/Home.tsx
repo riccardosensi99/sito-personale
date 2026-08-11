@@ -7,6 +7,7 @@ import { GithubIcon, LinkedinIcon } from '../components/site/BrandIcons';
 import { GooeyCursor } from '../components/site/GooeyCursor';
 import { Nav } from '../components/site/Nav';
 import { Marquee } from '../components/site/Marquee';
+import { Opening } from '../components/site/Opening';
 import { PerspectiveRoom } from '../components/site/PerspectiveRoom';
 import { ProjectCard } from '../components/site/ProjectCard';
 import { Reveal } from '../components/site/Reveal';
@@ -112,6 +113,7 @@ export default function Home() {
 
   return (
     <div className="site" ref={scene}>
+      <Opening pronto={!loading} />
       <GooeyCursor />
       <Nav />
       <CookieNotice />
