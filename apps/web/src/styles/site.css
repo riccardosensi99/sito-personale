@@ -918,8 +918,11 @@
   white-space: nowrap;
 }
 
+/* Su tutta la larghezza e non solo sotto il testo: incolonnati con la seconda
+   colonna i bottoni restano rientrati a sinistra della quantità che occupa il
+   pallino, e da fermi si leggono come storti. */
 .site-cookie-actions {
-  grid-column: 2;
+  grid-column: 1 / -1;
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
@@ -952,6 +955,12 @@
 }
 
 .site-cookie-btn--main:hover { background: #e8451a; border-color: #e8451a; }
+
+/* ═══ Copertina d'apertura ═══════════════════════════════════════════════ */
+
+/* Le sue regole non sono qui: stanno in linea dentro index.html, insieme al
+   markup. Deve poter essere dipinta prima di questo foglio — che pesa 63KB e
+   arriva dopo — altrimenti sarebbe una copertina che scopre ciò che copre. */
 
 /* ═══ Pagine di testo (informative) ══════════════════════════════════════ */
 
@@ -1055,12 +1064,20 @@
    tutte insieme: i nastri restano ancorati al fondo di .site, quindi basta che
    il contenuto sfori l'altezza dello schermo perché finiscano sotto la piega. */
 @media (max-width: 900px) {
+  /* Quanto della parte bassa dello schermo si tiene la pillola, lo stacco da
+     terra compreso: ci si scansano l'avviso cookie e il piede della pagina.
+     Non c'è env(safe-area-inset-bottom) perché non c'è viewport-fit=cover: la
+     striscia della barra gesti di iOS resta già fuori dall'area di disegno. */
+  .site { --site-dock: 63px; }
+
+  /* Niente più pillola in cima da scavalcare quando si salta a una sezione. */
+  .site-mode { scroll-padding-top: 24px; }
+
   .site-top {
     flex-direction: column;
     align-items: center;
     gap: 14px;
-    /* La pillola è fissa e sta qui sopra: senza spazio le finirebbe sotto. */
-    padding-top: 78px;
+    padding-top: 26px;
     text-align: center;
   }
 
@@ -1071,7 +1088,16 @@
   .site-brand { width: 52px; height: 52px; }
   .site-cta { padding: 10px 18px; }
 
-  .site-nav { top: 14px; padding: 5px; }
+  /* In basso, dove arriva il pollice. L'ombra si rovescia: da lassù cadeva
+     sulla pagina, da quaggiù deve staccare la pillola da ciò che le passa
+     sotto, altrimenti sembra appoggiata sul bordo dello schermo. */
+  .site-nav {
+    top: auto;
+    bottom: 14px;
+    padding: 5px;
+    box-shadow: 0 -10px 30px rgba(20, 17, 15, 0.18);
+  }
+
   .site-nav-item { padding: 10px 13px; }
 
   /* Restano le icone: quattro etichette su una riga sola non ci stanno, e la
@@ -1107,12 +1133,17 @@
   .site-marquee { padding: 10px 0; }
   .site-marquee-item { font-size: 16px; gap: 24px; padding-right: 24px; }
 
+  /* Sopra la pillola, non sotto: sono entrambi fissi in fondo allo schermo. */
   .site-cookie {
     left: 12px;
     right: 12px;
+    bottom: calc(var(--site-dock) + 12px);
     width: auto;
     padding: 17px 18px;
   }
+
+  /* L'ultima riga del piede finirebbe sotto la pillola e non si leggerebbe più. */
+  .site-footer { padding-bottom: calc(46px + var(--site-dock)); }
 }
 
 /* ═══ Movimento ridotto ══════════════════════════════════════════════════ */

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Navigate, NavLink, Route, Routes, useNavigate } from 'react-router-dom';
 import { api, ApiError } from '../../lib/api';
+import { useSeo } from '../../lib/seo';
 import { Login } from './Login';
 import { Dashboard } from './Dashboard';
 import { ProjectForm } from './ProjectForm';
@@ -27,26 +28,22 @@ export default function AdminApp({ basePath }: { basePath: string }) {
     }
   }, []);
 
-  useEffect(() => {
-    // Il backoffice non è indicizzabile nemmeno se il path segreto trapela.
-    const meta = document.createElement('meta');
-    meta.name = 'robots';
-    meta.content = 'noindex,nofollow';
-    document.head.appendChild(meta);
-    const previousTitle = document.title;
-    document.title = 'Backoffice';
+  // Non indicizzabile nemmeno se il path segreto trapela, e senza path nemmeno
+  // canonical: il backoffice non è una versione della home.
+  useSeo({
+    titolo: 'Backoffice',
+    descrizione: 'Area riservata.',
+    robots: 'noindex, nofollow, noarchive',
+  });
 
+  useEffect(() => {
     // Il tema chiaro sta sulla radice e non sulla pagina: il fondo deve valere
     // anche oltre il contenuto, e la schermata di login vive fuori dalla shell.
     document.documentElement.classList.add('admin-mode');
 
     void refreshMe();
 
-    return () => {
-      meta.remove();
-      document.title = previousTitle;
-      document.documentElement.classList.remove('admin-mode');
-    };
+    return () => document.documentElement.classList.remove('admin-mode');
   }, [refreshMe]);
 
   if (checking) return <div className="admin-boot">Verifico la sessione…</div>;

@@ -3,28 +3,188 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Portfolio di Riccardo Sensi, Full Stack Developer, Flutter Developer e AI enthusiast." />
-    <meta name="theme-color" content="#05070d" />
-    <meta name="color-scheme" content="dark" />
+
+    <!-- Questi meta valgono per la home. Le altre rotte se li riscrivono a
+         runtime da lib/seo.ts, dove ne esiste una copia: cambiandoli qui vanno
+         cambiati anche lì. %SITE_URL% lo sostituisce vite.config.ts, così
+         canonical e og puntano all'ambiente in cui il bundle è stato costruito. -->
+    <title>Riccardo Sensi — Full Stack Developer</title>
+    <meta
+      name="description"
+      content="Full stack developer. Costruisco gestionali, automazioni e interfacce che reggono anche quando i dati veri arrivano tutti insieme."
+    />
+    <meta name="author" content="Riccardo Sensi" />
+    <link rel="canonical" href="%SITE_URL%/" />
+
+    <meta name="theme-color" content="#e9e6e5" />
+    <meta name="color-scheme" content="light" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="canonical" href="https://riccardosensi.com/" />
 
-    <!-- Il logo è il primo elemento dipinto nell'hero: vale la richiesta anticipata. -->
+    <!-- Il logo è la copertina qui sotto, cioè la prima cosa dipinta in assoluto. -->
     <link rel="preload" as="image" href="/logo.webp" fetchpriority="high" />
 
+    <!--
+      Foglio di stile della copertina, in linea e non in site.css.
+
+      È l'unica parte del sito che deve poter essere dipinta prima che arrivi
+      qualunque altra cosa: se aspettasse il foglio da 63KB, o peggio il bundle
+      di React, non servirebbe a niente — sarebbe una copertina che arriva dopo
+      la cosa che dovrebbe coprire.
+
+      I colori sono scritti a mano perché i token di :root stanno in site.css e
+      a quel punto non c'è ancora: cambiandoli lì vanno cambiati anche qui. Sono
+      gli unici tre che servono.
+    -->
+    <style>
+      .site-opening-on { overflow: hidden; }
+
+      .site-opening {
+        position: fixed;
+        inset: 0;
+        /* Sopra tutto: pillola (40) e avviso cookie (60) compresi. */
+        z-index: 90;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: clamp(16px, 4vh, 34px);
+        background: #e9e6e5;
+      }
+
+      /* In uscita si allarga appena mentre svanisce: un sipario che si apre,
+         non una luce che si spegne. La durata è ripetuta nello script in fondo. */
+      .site-opening.is-leaving {
+        animation: site-opening-out 480ms cubic-bezier(0.65, 0, 0.35, 1) both;
+      }
+
+      @keyframes site-opening-out {
+        to { opacity: 0; transform: scale(1.05); }
+      }
+
+      .site-opening img {
+        width: clamp(118px, 30vw, 200px);
+        height: auto;
+        border-radius: 50%;
+        box-shadow: 0 26px 60px rgba(20, 17, 15, 0.22);
+        animation: site-opening-mark 760ms cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+
+      @keyframes site-opening-mark {
+        from { opacity: 0; transform: scale(0.84); }
+      }
+
+      /* Le stesse due voci del titolo dell'hero: una che fa da ombra, una che è
+         solo contorno. Copertina e prima schermata devono sembrare la stessa cosa. */
+      .site-opening-words {
+        margin: 0;
+        text-align: center;
+        font-family: "Space Grotesk", system-ui, sans-serif;
+        font-weight: 700;
+        line-height: 0.92;
+        letter-spacing: -0.03em;
+      }
+
+      .site-opening-words span {
+        display: block;
+        font-size: clamp(40px, 9vw, 88px);
+        animation: site-opening-word 640ms cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+
+      .site-opening-ghost { color: rgba(20, 17, 15, 0.13); animation-delay: 200ms; }
+
+      .site-opening-live {
+        color: transparent;
+        -webkit-text-stroke: 1.6px #ff5324;
+        animation-delay: 330ms;
+      }
+
+      @keyframes site-opening-word {
+        from { opacity: 0; transform: translateY(15px); }
+      }
+
+      /* Chi ha chiesto meno movimento la vede lo stesso — il suo mestiere ormai
+         è far comparire qualcosa subito, non fare scena — ma ferma, e in uscita
+         svanisce senza allargarsi. */
+      @media (prefers-reduced-motion: reduce) {
+        .site-opening img,
+        .site-opening-words span { animation: none; }
+        .site-opening.is-leaving { animation-name: site-opening-fade; }
+      }
+
+      @keyframes site-opening-fade {
+        to { opacity: 0; }
+      }
+    </style>
+
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://riccardosensi.com/" />
+    <meta property="og:site_name" content="Riccardo Sensi" />
+    <meta property="og:locale" content="it_IT" />
+    <meta property="og:url" content="%SITE_URL%/" />
     <meta property="og:title" content="Riccardo Sensi — Full Stack Developer" />
-    <meta property="og:description" content="Web app, backend, mobile Flutter e automazioni AI. Progetti costruiti per essere usati." />
-    <meta property="og:image" content="https://riccardosensi.com/og.jpg" />
+    <meta
+      property="og:description"
+      content="Full stack developer. Costruisco gestionali, automazioni e interfacce che reggono anche quando i dati veri arrivano tutti insieme."
+    />
+    <meta property="og:image" content="%SITE_URL%/og.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Riccardo Sensi — Full Stack Developer" />
     <meta name="twitter:card" content="summary_large_image" />
-
-    <title>Riccardo Sensi — Full Stack Developer</title>
   </head>
   <body>
+    <!--
+      La copertina sta qui e non dentro React perché il suo mestiere è coprire
+      l'attesa di React: il bundle pesa 425KB e fino ad allora la pagina non
+      dipinge niente. Scritta qui si vede appena arrivano l'HTML e il logo.
+      Chi la fa uscire di scena è hooks/useOpening.ts, quando i contenuti sono
+      arrivati davvero.
+    -->
+    <div id="copertina" class="site-opening" aria-hidden="true">
+      <img src="/logo.webp" width="512" height="512" alt="" fetchpriority="high" />
+      <p class="site-opening-words">
+        <span class="site-opening-ghost">BUILD</span>
+        <span class="site-opening-live">SHIP</span>
+      </p>
+    </div>
+
+    <script>
+      (function () {
+        var copertina = document.getElementById('copertina');
+        var radice = document.documentElement;
+
+        // Lo stesso index.html serve tutte le rotte: la copertina è solo della
+        // home. E chi arriva su un'ancora è venuto per una sezione, non per una
+        // presentazione — bloccandogli lo scorrimento le impedirebbe pure di
+        // arrivarci.
+        if (location.pathname !== '/' || location.hash) {
+          copertina.remove();
+          return;
+        }
+
+        // Dietro non c'è ancora niente da vedere, e ritrovarsi a metà pagina
+        // quando svanisce non è un arrivo.
+        radice.classList.add('site-opening-on');
+
+        var chiusa = false;
+        window.__chiudiCopertina = function () {
+          if (chiusa) return;
+          chiusa = true;
+          copertina.classList.add('is-leaving');
+          // Uguale alla durata di site-opening-out qui sopra.
+          setTimeout(function () {
+            copertina.remove();
+            radice.classList.remove('site-opening-on');
+          }, 480);
+        };
+
+        // Rete di sicurezza: normalmente la chiude React appena i contenuti ci
+        // sono. Se il bundle non arrivasse affatto, la copertina non deve
+        // restare davanti per sempre.
+        setTimeout(window.__chiudiCopertina, 6000);
+      })();
+    </script>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
