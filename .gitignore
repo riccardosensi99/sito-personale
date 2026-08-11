@@ -1,6 +1,8 @@
 node_modules/
 dist/
 build/
+# La cache incrementale di tsc: cambia a ogni typecheck e non dice niente a nessuno
+*.tsbuildinfo
 
 # Configurazione degli ambienti: mai nel repo, solo il template
 .env
