@@ -16,6 +16,9 @@
   --lab-body: "Inter", system-ui, sans-serif;
 
   background: var(--lab-bg);
+  scroll-behavior: smooth;
+  /* La pillola è fissa e coprirebbe l'inizio della sezione a cui si salta. */
+  scroll-padding-top: 110px;
 }
 
 /* Il cursore vero sparisce solo dove ce n'è uno finto a sostituirlo: la query
@@ -29,19 +32,45 @@
 
 .lab {
   position: relative;
-  min-height: 100svh;
-  overflow: hidden;
   background: var(--lab-bg);
   color: var(--lab-ink);
   font-family: var(--lab-body);
+  /* clip e non hidden: hidden su un asse solo creerebbe un contenitore di
+     scorrimento e romperebbe position: sticky più in basso. */
+  overflow-x: clip;
 
   /* Riempite dal puntatore, lette dagli strati per la parallasse. */
   --px: 0;
   --py: 0;
 }
 
+/* global.css colora e spazia alcuni elementi per selettore nudo — `section`,
+   `footer`, `::selection` — pensando al sito scuro. Sono regole d'elemento,
+   quindi arrivano fin qui: si annullano sul posto, senza toccare il foglio del
+   sito vero. */
+.lab :where(section, footer) {
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
+.lab ::selection {
+  background: rgba(255, 83, 36, 0.28);
+  color: var(--lab-ink);
+}
+
+/* La prima schermata resta il quadro chiuso di prima: stanza, nastri e
+   piedistallo sono ancorati qui dentro, non alla pagina intera. */
+.lab-hero {
+  position: relative;
+  min-height: 100svh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
 /* Alone caldo in alto a sinistra, come nel riferimento. */
-.lab::before {
+.lab-hero::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -108,47 +137,49 @@
 .lab-top {
   position: relative;
   z-index: 3;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: start;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
   gap: var(--sp-5);
-  padding: 34px clamp(20px, 4vw, 56px) 0;
+  padding: 30px clamp(20px, 4vw, 56px) 0;
 }
 
 .lab-brand {
   display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  font-family: var(--lab-display);
-  font-size: 30px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  color: var(--lab-accent);
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(20, 17, 15, 0.22);
+  transition: transform 300ms var(--lab-ease, cubic-bezier(0.22, 1, 0.36, 1));
 }
 
-/* Stella a quattro punte: due rombi incrociati, nessun asset da caricare. */
-.lab-brand-star {
-  width: 26px;
-  height: 26px;
-  background: var(--lab-accent);
-  clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
-  animation: lab-spin 9s linear infinite;
+.lab-brand:hover { transform: rotate(-8deg) scale(1.06); }
+
+.lab-brand img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-@keyframes lab-spin {
-  to { transform: rotate(360deg); }
-}
-
+/* Fissa e centrata: resta a portata anche a metà pagina. */
 .lab-nav {
+  position: fixed;
+  top: 26px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
   display: flex;
   align-items: center;
   gap: 4px;
   padding: 7px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.62);
+  /* Quasi opaca: a metà pagina il testo che le scorre sotto restava leggibile
+     attraverso il vetro e sembrava un errore di sovrapposizione. */
+  background: rgba(247, 245, 244, 0.94);
   border: 1px solid rgba(255, 255, 255, 0.9);
-  box-shadow: 0 14px 34px rgba(20, 17, 15, 0.1);
-  backdrop-filter: blur(10px);
+  box-shadow: 0 16px 38px rgba(20, 17, 15, 0.16);
+  backdrop-filter: blur(14px);
 }
 
 .lab-nav-item {
@@ -183,12 +214,23 @@
 }
 
 .lab-signature {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 11px;
   margin: 0 0 10px;
   font-family: var(--lab-display);
   font-size: 26px;
   font-weight: 500;
   font-style: italic;
   letter-spacing: -0.02em;
+}
+
+.lab-signature img {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  flex: none;
 }
 
 .lab-bio {
@@ -224,9 +266,11 @@
 .lab-stage {
   position: relative;
   z-index: 2;
+  flex: 1;
   display: grid;
   place-items: center;
-  padding-top: clamp(30px, 7vh, 90px);
+  align-content: center;
+  padding-top: clamp(10px, 4vh, 50px);
 }
 
 .lab-title {
@@ -469,6 +513,332 @@
   opacity: 1;
 }
 
+/* ═══ Sezioni ════════════════════════════════════════════════════════════ */
+
+.lab-section {
+  position: relative;
+  z-index: 2;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: clamp(90px, 14vh, 170px) clamp(20px, 4vw, 56px);
+}
+
+.lab-kicker {
+  margin: 0 0 18px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--lab-accent);
+}
+
+.lab-h2 {
+  max-width: 15ch;
+  margin: 0 0 40px;
+  font-family: var(--lab-display);
+  font-size: clamp(32px, 5vw, 62px);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+
+.lab-h2 em {
+  font-style: normal;
+  color: transparent;
+  -webkit-text-stroke: 1.4px var(--lab-accent);
+}
+
+.lab-h2--big { max-width: 18ch; }
+
+/* La comparsa: sale e si accende una volta sola, quando entra nello schermo. */
+.lab-reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 620ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.lab-reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ═══ Chi sono ═══════════════════════════════════════════════════════════ */
+
+.lab-about {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(30px, 5vw, 70px);
+  align-items: start;
+}
+
+.lab-lead {
+  margin: 0 0 18px;
+  font-size: clamp(16px, 1.35vw, 19px);
+  line-height: 1.62;
+  color: var(--lab-muted);
+}
+
+.lab-skills {
+  display: grid;
+  gap: 2px;
+}
+
+.lab-skill {
+  padding: 20px 0;
+  border-top: 1px solid var(--lab-line);
+}
+
+.lab-skill h3 {
+  margin: 0 0 6px;
+  font-family: var(--lab-display);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.lab-skill p {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--lab-muted);
+}
+
+/* ═══ Progetti ═══════════════════════════════════════════════════════════ */
+
+.lab-projects {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.lab-project {
+  position: relative;
+  height: 100%;
+  padding: 30px;
+  border: 1px solid var(--lab-line);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.5);
+  overflow: hidden;
+  transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 320ms ease, box-shadow 320ms ease;
+}
+
+/* L'arancio entra da sotto al passaggio del mouse, senza ridipingere la card. */
+.lab-project::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 3px;
+  background: var(--lab-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 380ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.lab-project:hover {
+  transform: translateY(-5px);
+  border-color: rgba(20, 17, 15, 0.2);
+  box-shadow: 0 22px 50px rgba(20, 17, 15, 0.1);
+}
+
+.lab-project:hover::after { transform: scaleX(1); }
+
+.lab-project-num {
+  position: absolute;
+  top: 22px;
+  right: 26px;
+  font-family: var(--lab-display);
+  font-size: 42px;
+  font-weight: 700;
+  color: rgba(20, 17, 15, 0.07);
+  line-height: 1;
+}
+
+.lab-project-type {
+  margin: 0 0 14px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--lab-accent);
+}
+
+.lab-project h3 {
+  margin: 0 0 10px;
+  font-family: var(--lab-display);
+  font-size: 25px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.lab-project-text {
+  margin: 0 0 20px;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--lab-muted);
+}
+
+.lab-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lab-tags li {
+  padding: 6px 12px;
+  border: 1px solid var(--lab-line);
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--lab-muted);
+}
+
+.lab-project-arrow {
+  position: absolute;
+  right: 26px;
+  bottom: 26px;
+  color: var(--lab-accent);
+  opacity: 0;
+  transform: translate(-6px, 6px);
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+
+.lab-project-arrow svg { width: 22px; height: 22px; }
+
+.lab-project:hover .lab-project-arrow {
+  opacity: 1;
+  transform: none;
+}
+
+/* ═══ Contatti ═══════════════════════════════════════════════════════════ */
+
+.lab-section--contact { text-align: center; }
+.lab-section--contact .lab-h2 { margin-inline: auto; }
+
+.lab-mail {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--lab-display);
+  font-size: clamp(19px, 2.4vw, 32px);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  border-bottom: 2px solid transparent;
+  transition: color 240ms ease, border-color 240ms ease;
+}
+
+.lab-mail svg { width: 0.8em; height: 0.8em; }
+
+.lab-mail:hover {
+  color: var(--lab-accent);
+  border-bottom-color: var(--lab-accent);
+}
+
+/* ═══ Footer ═════════════════════════════════════════════════════════════ */
+
+.lab-footer {
+  position: relative;
+  z-index: 2;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 40px clamp(20px, 4vw, 56px) 46px;
+  border-top: 1px solid var(--lab-line);
+}
+
+.lab-footer-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.lab-footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.lab-footer-brand img {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+}
+
+.lab-footer-brand div {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.35;
+}
+
+.lab-footer-brand strong {
+  font-family: var(--lab-display);
+  font-size: 16px;
+  letter-spacing: -0.01em;
+}
+
+.lab-footer-brand span {
+  font-size: 12.5px;
+  color: var(--lab-muted);
+}
+
+.lab-cv {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 26px;
+  border-radius: 999px;
+  background: var(--lab-accent);
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  box-shadow: 0 12px 30px rgba(255, 83, 36, 0.3);
+  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 260ms ease;
+}
+
+.lab-cv svg { width: 17px; height: 17px; }
+
+.lab-cv:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px rgba(255, 83, 36, 0.4);
+}
+
+.lab-social {
+  display: flex;
+  gap: 10px;
+}
+
+.lab-social a {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 1px solid var(--lab-line);
+  border-radius: 50%;
+  color: var(--lab-ink);
+  transition: background 240ms ease, color 240ms ease, border-color 240ms ease;
+}
+
+.lab-social svg { width: 18px; height: 18px; }
+
+.lab-social a:hover {
+  background: var(--lab-ink);
+  border-color: var(--lab-ink);
+  color: var(--lab-bg);
+}
+
+.lab-footer-note {
+  margin: 30px 0 0;
+  font-size: 12.5px;
+  color: var(--lab-muted);
+}
+
 /* ═══ Schermi stretti ════════════════════════════════════════════════════ */
 
 /* Sotto i 900px la scena passa da "quadro" a colonna. Le misure si stringono
@@ -476,27 +846,40 @@
    il contenuto sfori l'altezza dello schermo perché finiscano sotto la piega. */
 @media (max-width: 900px) {
   .lab-top {
-    grid-template-columns: 1fr;
-    justify-items: center;
+    flex-direction: column;
+    align-items: center;
     gap: 14px;
-    padding-top: 22px;
+    /* La pillola è fissa e sta qui sopra: senza spazio le finirebbe sotto. */
+    padding-top: 78px;
     text-align: center;
   }
 
-  .lab-intro {
-    justify-self: center;
-    text-align: center;
-  }
-
+  .lab-intro { text-align: center; }
+  .lab-signature { justify-content: center; font-size: 22px; margin-bottom: 6px; }
+  .lab-signature img { width: 28px; height: 28px; }
   .lab-bio { margin-bottom: 12px; font-size: 13.5px; }
-  .lab-brand { font-size: 25px; }
-  .lab-signature { font-size: 22px; margin-bottom: 6px; }
+  .lab-brand { width: 52px; height: 52px; }
   .lab-cta { padding: 10px 18px; }
 
-  .lab-nav { order: 3; flex-wrap: wrap; justify-content: center; padding: 5px; }
-  .lab-nav-item { padding: 9px 14px; font-size: 14px; }
+  .lab-nav { top: 14px; padding: 5px; }
+  .lab-nav-item { padding: 10px 13px; }
+
+  /* Restano le icone: quattro etichette su una riga sola non ci stanno, e la
+     pillola su due righe mangia mezza schermata. */
+  .lab-nav-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
 
   .lab-stage { padding-top: 18px; }
+  .lab-about { grid-template-columns: 1fr; }
+  .lab-projects { grid-template-columns: 1fr; }
+  .lab-section { padding-block: clamp(66px, 10vh, 100px); }
+  .lab-footer-main { flex-direction: column; align-items: flex-start; }
   .lab-title-ghost { font-size: clamp(34px, 11vw, 60px); }
   .lab-title-live { font-size: clamp(26px, 8vw, 46px); }
 
@@ -518,8 +901,9 @@
 /* ═══ Movimento ridotto ══════════════════════════════════════════════════ */
 
 @media (prefers-reduced-motion: reduce) {
+  .lab-mode { scroll-behavior: auto; }
+
   .lab-room-frame,
-  .lab-brand-star,
   .lab-marquee-track,
   .lab-type-caret {
     animation: none;
