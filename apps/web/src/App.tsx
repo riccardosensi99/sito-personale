@@ -1,5 +1,4 @@
 import { lazy, Suspense, type ReactNode } from 'react';
-import { MotionConfig } from 'framer-motion';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 
@@ -16,27 +15,23 @@ const attesa = (node: ReactNode) => <Suspense fallback={null}>{node}</Suspense>;
 
 export function App() {
   return (
-    // reducedMotion="user": con prefers-reduced-motion attivo framer-motion smette
-    // di animare trasformazioni e opacità, senza doverlo gestire componente per componente.
-    <MotionConfig reducedMotion="user">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/cookie" element={attesa(<Cookie />)} />
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/cookie" element={attesa(<Cookie />)} />
 
-          <Route
-            path={`/${ADMIN_PATH}/*`}
-            element={
-              <Suspense fallback={<div className="admin-boot">Caricamento…</div>}>
-                <AdminApp basePath={`/${ADMIN_PATH}`} />
-              </Suspense>
-            }
-          />
+        <Route
+          path={`/${ADMIN_PATH}/*`}
+          element={
+            <Suspense fallback={<div className="admin-boot">Caricamento…</div>}>
+              <AdminApp basePath={`/${ADMIN_PATH}`} />
+            </Suspense>
+          }
+        />
 
-          {/* Comprese le vecchie /classico, /lab e /lab/cookie, che non esistono più. */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
-    </MotionConfig>
+        {/* Comprese le vecchie /classico, /lab e /lab/cookie, che non esistono più. */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
