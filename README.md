@@ -60,7 +60,7 @@ tabella, i testi nelle impostazioni. Dal backoffice si cambia tutto senza un dep
 | dove | cosa |
 |---|---|
 | *Progetti* | le card della sezione progetti, ordine compreso |
-| *Contenuti sito* → **Testi della pagina** (`home`) | titoli, bio, competenze, nastro, numeri, P. IVA |
+| *Contenuti sito* → **Testi della pagina** (`home`) | titoli, bio, competenze, servizi, nastro, numeri, P. IVA |
 | *Contenuti sito* → **Recapiti** (`contact`) | mail, GitHub, LinkedIn |
 | *Curriculum* | il PDF del pulsante nel footer |
 

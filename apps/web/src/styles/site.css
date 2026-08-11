@@ -740,6 +740,53 @@
   transform: none;
 }
 
+/* ═══ Servizi ════════════════════════════════════════════════════════════ */
+
+/* Un elenco e non delle card: le card sono dei progetti, e due griglie di
+   riquadri una sotto l'altra si leggerebbero come la stessa sezione stampata
+   due volte. Qui c'è solo un filetto sopra ogni voce, come nelle competenze,
+   ma su due colonne e con più aria: sono cose che si comprano, non un elenco
+   di tecnologie. */
+.site-services {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0 clamp(30px, 5vw, 70px);
+}
+
+.site-service {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 7px 16px;
+  padding: 26px 0 30px;
+  border-top: 1px solid var(--site-line);
+}
+
+/* Il numero occupa entrambe le righe: titolo e testo restano incolonnati fra
+   loro invece di scalare uno rispetto all'altro. */
+.site-service-num {
+  grid-row: 1 / span 2;
+  padding-top: 6px;
+  font-family: var(--site-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--site-accent);
+}
+
+.site-service h3 {
+  margin: 0;
+  font-family: var(--site-display);
+  font-size: clamp(19px, 1.7vw, 23px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.site-service p {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--site-muted);
+}
+
 /* ═══ Contatti ═══════════════════════════════════════════════════════════ */
 
 .site-section--contact { text-align: center; }
@@ -1114,6 +1161,7 @@
   .site-stage { padding-top: 18px; }
   .site-about { grid-template-columns: 1fr; }
   .site-projects { grid-template-columns: 1fr; }
+  .site-services { grid-template-columns: 1fr; }
   .site-section { padding-block: clamp(66px, 10vh, 100px); }
   .site-footer-main { flex-direction: column; align-items: flex-start; }
   .site-title-ghost { font-size: clamp(34px, 11vw, 60px); }
