@@ -57,6 +57,9 @@ services:
         VITE_API_URL: /api
         VITE_ADMIN_PATH: ${VITE_ADMIN_PATH}
         VITE_SITE_URL: ${VITE_SITE_URL}
+        # Quale home serve questo ambiente. Cambiandola serve ricostruire il
+        # web: finisce nel bundle, non è una variabile di runtime.
+        VITE_HOME_STYLE: ${VITE_HOME_STYLE:-dark}
     restart: unless-stopped
     depends_on:
       - api
