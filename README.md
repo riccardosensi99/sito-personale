@@ -60,12 +60,16 @@ tabella, i testi nelle impostazioni. Dal backoffice si cambia tutto senza un dep
 | dove | cosa |
 |---|---|
 | *Progetti* | le card della sezione progetti, ordine compreso |
-| *Contenuti sito* → **Testi della pagina** (`home`) | titoli, bio, competenze, nastro, numeri, P. IVA |
+| *Contenuti sito* → **Testi della pagina** (`home`) | titoli, bio, competenze, servizi, nastro, numeri, P. IVA |
 | *Contenuti sito* → **Recapiti** (`contact`) | mail, GitHub, LinkedIn |
 | *Curriculum* | il PDF del pulsante nel footer |
 
 Nei testi lunghi `_così_` diventa corsivo e `*così*` grassetto: è l'unica formattazione che passa,
 e serve a non far viaggiare HTML dentro un campo di testo.
+
+Nei `kicker` il numero non va scritto — `Servizi`, non `03 — Servizi`. Lo mette la home in base
+all'ordine delle sezioni, e uno scritto a mano viene tolto prima di stampare: così una sezione
+nuova non obbliga a rinumerare tutte le altre in ogni ambiente.
 
 Un blocco mai salvato compare comunque nell'editor, col bordo tratteggiato e già pieno dei valori
 di partenza scritti nel codice: finché non lo salvi è quello che il sito mostra.

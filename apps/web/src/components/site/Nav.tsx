@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Briefcase, Home as HomeIcon, Mail, User } from 'lucide-react';
+import { Briefcase, Home as HomeIcon, Mail, User, Wrench } from 'lucide-react';
 
 /**
  * La pillola di navigazione, fissa in alto: resta a portata anche a metà
@@ -18,6 +18,7 @@ export const SECTIONS = [
   { id: 'home', label: 'Home', icon: HomeIcon },
   { id: 'chi-sono', label: 'Chi sono', icon: User },
   { id: 'progetti', label: 'Progetti', icon: Briefcase },
+  { id: 'servizi', label: 'Servizi', icon: Wrench },
   { id: 'contatti', label: 'Contatti', icon: Mail },
 ] as const;
 

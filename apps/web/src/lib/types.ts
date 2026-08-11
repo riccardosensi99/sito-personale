@@ -60,6 +60,11 @@ export type ContactSettings = {
 
 /// Tutto il testo della pagina, sezione per sezione. Nei campi lunghi valgono i
 /// marcatori di `lib/enfasi`: `_così_` per il corsivo, `*così*` per il grassetto.
+///
+/// Nei `kicker` il numero non va scritto: lo mette la home in base all'ordine
+/// delle sezioni, e uno scritto a mano viene tolto prima di stampare. Serve a
+/// non doverli rinumerare tutti, in ogni ambiente, ogni volta che una sezione
+/// nasce o cambia posto.
 export type HomeSettings = {
   nome: string;
   ruolo: string;
@@ -81,6 +86,9 @@ export type HomeSettings = {
     skills: { title: string; text: string }[];
   };
   projects: { kicker: string; title: string; empty: string };
+  /// Le voci si numerano da sole in base all'ordine: togliendone una in mezzo
+  /// non resta un buco, e non c'è un numero da tenere allineato a mano.
+  services: { kicker: string; title: string; items: { title: string; text: string }[] };
   contact: { kicker: string; title: string };
   piva: string;
 };

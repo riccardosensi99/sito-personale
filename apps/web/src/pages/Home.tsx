@@ -62,6 +62,27 @@ function usePointerParallax<T extends HTMLElement>() {
   return ref;
 }
 
+/**
+ * Il numero davanti al kicker lo decide la posizione, non il testo salvato.
+ *
+ * Prima stava dentro la stringa, a database. Aggiungere «Servizi» in mezzo ha
+ * voluto dire che «Contatti» restava 03 in ogni ambiente già in piedi — il
+ * merge dai default riguarda solo le chiavi che a database non ci sono — e
+ * fino a una correzione a mano il sito mostrava due sezioni numerate 03.
+ *
+ * L'ordine lo sa il codice, quindi il numero lo scrive il codice. Dal
+ * backoffice si continuano a decidere le parole, che sono l'unica parte che
+ * abbia senso curare da lì.
+ */
+const NUMERATE = ['about', 'projects', 'services', 'contact'] as const;
+
+function kicker(chiave: (typeof NUMERATE)[number], testo: string): string {
+  const numero = String(NUMERATE.indexOf(chiave) + 1).padStart(2, '0');
+  // Via il numero già scritto nel testo: negli ambienti in piedi c'è, in quelli
+  // nuovi no, e in nessuno dei due deve finire per comparire due volte.
+  return `${numero} — ${testo.replace(/^\s*\d+\s*[—–-]\s*/, '')}`;
+}
+
 export default function Home() {
   const scene = usePointerParallax<HTMLDivElement>();
 
@@ -95,6 +116,12 @@ export default function Home() {
         email: `mailto:${contact.email}`,
         ...(home.piva ? { vatID: home.piva } : {}),
         knowsAbout: home.about.skills.map(({ title }) => title),
+        // I servizi sono la parte che un motore può capire davvero: dichiararli
+        // come offerte costa quattro righe e li rende leggibili come tali.
+        makesOffer: home.services.items.map(({ title, text }) => ({
+          '@type': 'Offer',
+          itemOffered: { '@type': 'Service', name: title, description: text },
+        })),
         sameAs: [contact.github, contact.linkedin].filter(Boolean),
       },
       {
@@ -174,7 +201,7 @@ export default function Home() {
       {/* ═══ Chi sono ═══ */}
       <section className="site-section" id="chi-sono">
         <Reveal>
-          <p className="site-kicker">{home.about.kicker}</p>
+          <p className="site-kicker">{kicker('about', home.about.kicker)}</p>
           <h2 className="site-h2">{enfasi(home.about.title)}</h2>
         </Reveal>
 
@@ -206,7 +233,7 @@ export default function Home() {
       {/* ═══ Progetti ═══ */}
       <section className="site-section" id="progetti">
         <Reveal>
-          <p className="site-kicker">{home.projects.kicker}</p>
+          <p className="site-kicker">{kicker('projects', home.projects.kicker)}</p>
           <h2 className="site-h2">{enfasi(home.projects.title)}</h2>
         </Reveal>
 
@@ -227,10 +254,32 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ═══ Servizi ═══ */}
+      {/* Dopo i progetti e prima dei contatti: prima si vede cos'è stato fatto,
+          poi cosa si può chiedere, e a quel punto la mail è a un dito. */}
+      <section className="site-section" id="servizi">
+        <Reveal>
+          <p className="site-kicker">{kicker('services', home.services.kicker)}</p>
+          <h2 className="site-h2">{enfasi(home.services.title)}</h2>
+        </Reveal>
+
+        <div className="site-services">
+          {home.services.items.map(({ title, text }, i) => (
+            <Reveal key={title} delay={60 + i * 70}>
+              <div className="site-service">
+                <span className="site-service-num">{String(i + 1).padStart(2, '0')}</span>
+                <h3>{title}</h3>
+                <p>{text}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
       {/* ═══ Contatti ═══ */}
       <section className="site-section site-section--contact" id="contatti">
         <Reveal>
-          <p className="site-kicker">{home.contact.kicker}</p>
+          <p className="site-kicker">{kicker('contact', home.contact.kicker)}</p>
           <h2 className="site-h2 site-h2--big">{enfasi(home.contact.title)}</h2>
           <a className="site-mail" href={`mailto:${contact.email}`}>
             {contact.email}

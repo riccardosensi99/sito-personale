@@ -22,7 +22,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
       'AI AGENTS',
     ],
     about: {
-      kicker: '01 — Chi sono',
+      kicker: 'Chi sono',
       title: 'Scrivo software che _regge_ quando smette di essere una demo.',
       paragraphs: [
         "Lavoro sul pezzo intero: il database, l'API, l'interfaccia e la macchina su cui gira. Mi interessa la parte che di solito si scopre dopo — i permessi, i casi limite, cosa succede quando due persone salvano lo stesso record nello stesso momento.",
@@ -37,12 +37,37 @@ export const DEFAULT_SETTINGS: SiteSettings = {
       ],
     },
     projects: {
-      kicker: '02 — Progetti',
+      kicker: 'Progetti',
       title: 'Cose che girano, non slide.',
       empty: 'Nessun progetto pubblicato al momento. Torna a trovarmi tra poco.',
     },
+    /// I testi di partenza non inventano niente: sono le stesse cose che il
+    /// sito già dichiara nel nastro, nelle competenze e nella bio, rimesse
+    /// nell'ordine in cui le cerca chi deve decidere se scrivere.
+    services: {
+      kicker: 'Servizi',
+      title: 'Quello per cui mi _chiamano_.',
+      items: [
+        {
+          title: 'Gestionali su misura',
+          text: 'Anagrafiche, ruoli, permessi e report: il software interno che prende il posto del foglio di calcolo condiviso, e che regge quando lo usano in dieci nello stesso momento.',
+        },
+        {
+          title: 'Web app e interfacce',
+          text: 'React e TypeScript davanti, Node e PostgreSQL dietro. Poche schermate che fanno esattamente ciò che serve, invece di una dashboard piena di grafici che nessuno guarda.',
+        },
+        {
+          title: 'Automazioni e agenti AI',
+          text: 'Integrazioni fra i servizi che già usi e procedure che tolgono lavoro ripetitivo, con i controlli al posto giusto perché un errore non si propaghi in silenzio.',
+        },
+        {
+          title: 'Messa in produzione',
+          text: 'Docker, nginx e deploy su server, con ambienti separati per provare prima di pubblicare. Un progetto non è finito quando compila: è finito quando gira.',
+        },
+      ],
+    },
     contact: {
-      kicker: '03 — Contatti',
+      kicker: 'Contatti',
       title: "Hai un'idea che _deve funzionare_?",
     },
     piva: '04030250544',
