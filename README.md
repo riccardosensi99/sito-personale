@@ -52,28 +52,23 @@ toccano; staging convive con prod sullo stesso server e ha perciò un nome suo, 
 Il flusso è: lavori in locale → merge su `develop` → `make deploy-staging` → merge su `main` →
 `make deploy-prod`.
 
-### Quale home serve un ambiente
+### I contenuti
 
-Le due direzioni visive convivono nello stesso codice e si scelgono per ambiente con
-`VITE_HOME_STYLE` nel suo `.env`:
+Il sito è una pagina sola e non ha niente scritto dentro il codice: i progetti stanno nella loro
+tabella, i testi nelle impostazioni. Dal backoffice si cambia tutto senza un deploy.
 
-| valore | cosa serve su `/` |
+| dove | cosa |
 |---|---|
-| `dark` (default) | il sito storico, contenuti dal backoffice |
-| `light` | la direzione chiara |
+| *Progetti* | le card della sezione progetti, ordine compreso |
+| *Contenuti sito* → **Testi della pagina** (`home`) | titoli, bio, competenze, nastro, numeri, P. IVA |
+| *Contenuti sito* → **Recapiti** (`contact`) | mail, GitHub, LinkedIn |
+| *Curriculum* | il PDF del pulsante nel footer |
 
-Qualunque sia l'impostazione, **entrambe restano raggiungibili**: `/classico` è sempre quella
-scura, `/lab` sempre quella chiara. Serve a confrontarle sullo stesso ambiente senza ricostruire.
+Nei testi lunghi `_così_` diventa corsivo e `*così*` grassetto: è l'unica formattazione che passa,
+e serve a non far viaggiare HTML dentro un campo di testo.
 
-La variabile finisce dentro il bundle, quindi non basta riavviare: dopo averla cambiata va
-ricostruito il web.
-
-```bash
-make pull-env ENV=staging      # scarica il .env dal server
-# aggiungi o cambia VITE_HOME_STYLE=light
-make push-env ENV=staging      # rimandalo su
-make deploy-staging            # ricostruisce e riavvia
-```
+Un blocco mai salvato compare comunque nell'editor, col bordo tratteggiato e già pieno dei valori
+di partenza scritti nel codice: finché non lo salvi è quello che il sito mostra.
 
 > `.env.local` è anche il file che Vite carica da solo in ogni build eseguito su questa macchina.
 > Una `VITE_*` scritta lì dentro vale quindi pure per `npm run dev:web` e `npm run build`, non

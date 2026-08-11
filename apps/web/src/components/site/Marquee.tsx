@@ -20,12 +20,12 @@ export function Marquee({ items, duration = 26, reverse = false, tilt = -3 }: Pr
   const run = [...items, ...items];
 
   return (
-    <div className={`lab-marquee${reverse ? ' lab-marquee--reverse' : ''}`} style={{ '--tilt': `${tilt}deg` } as React.CSSProperties} aria-hidden="true">
-      <div className="lab-marquee-track" style={{ animationDuration: `${duration}s` }}>
+    <div className={`site-marquee${reverse ? ' site-marquee--reverse' : ''}`} style={{ '--tilt': `${tilt}deg` } as React.CSSProperties} aria-hidden="true">
+      <div className="site-marquee-track" style={{ animationDuration: `${duration}s` }}>
         {run.map((item, i) => (
-          <span className="lab-marquee-item" key={`${item}-${i}`}>
+          <span className="site-marquee-item" key={`${item}-${i}`}>
             {item}
-            <i className="lab-marquee-star" />
+            <i className="site-marquee-star" />
           </span>
         ))}
       </div>

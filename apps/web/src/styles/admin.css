@@ -1,11 +1,10 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   Backoffice — stessa direzione della prova su /lab: fondo chiaro, accento
-   arancio, densità da pannello di controllo.
+   Backoffice — stessa direzione del sito: fondo chiaro, accento arancio,
+   densità da pannello di controllo.
 
    Tutto è annidato sotto .admin-mode, la classe che AdminApp mette sulla
-   radice. Serve a due cose: tenere il tema fuori dal sito scuro, che condivide
-   lo stesso global.css, e vincere sulle regole d'elemento di quel foglio senza
-   dover rincorrere ogni selettore con !important.
+   radice: il foglio del sito è caricato anche qui — l'anteprima di un progetto
+   ha bisogno della card vera — e le due parti non devono pestarsi i piedi.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .admin-mode {
@@ -35,11 +34,18 @@
 .admin-mode body {
   background: var(--adm-bg);
   color: var(--adm-ink);
+  font-family: "Inter", system-ui, sans-serif;
 }
 
 .admin-mode ::selection {
   background: rgba(255, 83, 36, 0.26);
   color: var(--adm-ink);
+}
+
+.admin-mode :focus-visible {
+  outline: 2px solid var(--adm-accent);
+  outline-offset: 3px;
+  border-radius: 6px;
 }
 
 .admin-boot {
@@ -150,13 +156,33 @@
   line-height: 1.55;
 }
 
-.admin-mode .admin-empty {
+.admin-mode .admin-empty,
+.admin-mode .empty-state {
   margin: 0;
   padding: 26px;
   border: 1px dashed var(--adm-line-strong);
   border-radius: var(--adm-r-lg);
   color: var(--adm-muted);
   font-size: 14px;
+}
+
+.admin-mode .empty-state {
+  padding: 44px 26px;
+  text-align: center;
+}
+
+/* Riquadro che raccoglie un gruppo di controlli, usato dalla pagina sicurezza. */
+.admin-mode .panel {
+  padding: 24px;
+  border: 1px solid var(--adm-line);
+  border-radius: var(--adm-r-lg);
+  background: var(--adm-raised);
+}
+
+.admin-mode .panel > h3 {
+  margin: 0 0 18px;
+  font-family: var(--adm-display);
+  font-size: 17px;
 }
 
 /* ─── Login ──────────────────────────────────────────────────────────────── */
@@ -509,6 +535,10 @@
   color: #fff;
 }
 
+/* Blocco previsto dal sito ma non ancora scritto a database: il tratteggio dice
+   che quei valori sono quelli di partenza, non qualcosa che è stato deciso. */
+.admin-mode .settings-keys button.is-new { border-style: dashed; }
+
 /* ─── Curriculum ─────────────────────────────────────────────────────────── */
 
 .admin-mode .cv-panel { display: grid; gap: 16px; max-width: 720px; }
@@ -599,12 +629,22 @@
 
 .admin-mode .form-preview { position: sticky; top: 34px; }
 
-/* L'anteprima mostra la card com'è sul sito pubblico, che è scuro: resta scura
-   anche qui dentro, ed è appunto ciò che deve mostrare. */
-.admin-mode .form-preview .project-card { min-height: 0; }
-/* Nell'anteprima non gira l'IntersectionObserver: la card dev'essere subito visibile. */
-.admin-mode .form-preview .reveal { opacity: 1; transform: none; }
-.admin-mode .form-preview .project-card:hover { transform: none; }
+.admin-mode .preview-kicker {
+  margin-bottom: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--adm-muted);
+}
+
+/* La card è quella vera, presa da site.css. Qui sopra resta solo ciò che nel
+   pannello non ha senso: il sollevamento al passaggio del mouse, che invita a
+   cliccare una card che qui non porta da nessuna parte. */
+.admin-mode .form-preview .site-project:hover {
+  transform: none;
+  box-shadow: none;
+}
 
 @media (max-width: 1100px) {
   .admin-mode .form-layout { grid-template-columns: 1fr; }

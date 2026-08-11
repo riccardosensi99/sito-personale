@@ -1,96 +1,62 @@
 import { useEffect, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowUpRight, Menu, X } from 'lucide-react';
+import { Briefcase, Home as HomeIcon, Mail, User } from 'lucide-react';
 
-const LINKS = [
-  { href: '#projects', label: 'Progetti' },
-  { href: '#services', label: 'Servizi' },
-  { href: '#about', label: 'Esperienza' },
-  { href: '#contact', label: 'Contatti' },
+/**
+ * La pillola di navigazione, fissa in alto: resta a portata anche a metà
+ * pagina, ed evidenzia la sezione che si sta guardando.
+ *
+ * La sezione attiva la decide un IntersectionObserver e non lo scroll: leggere
+ * la posizione a ogni evento di scorrimento vorrebbe dire misurare l'altezza di
+ * ogni sezione a mano, e sbagliarla appena una cambia di contenuto.
+ */
+
+export const SECTIONS = [
+  { id: 'home', label: 'Home', icon: HomeIcon },
+  { id: 'chi-sono', label: 'Chi sono', icon: User },
+  { id: 'progetti', label: 'Progetti', icon: Briefcase },
+  { id: 'contatti', label: 'Contatti', icon: Mail },
 ];
 
 export function Nav() {
-  const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [active, setActive] = useState('home');
 
-  // La barra si "chiude" appena la pagina si stacca dall'hero.
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    const targets = SECTIONS.map(({ id }) => document.getElementById(id)).filter(
+      (el): el is HTMLElement => el !== null,
+    );
+    if (targets.length === 0) return;
+
+    // La fascia centrale dello schermo fa da mirino: la sezione attiva è quella
+    // che la occupa, non quella che si affaccia appena dal bordo.
+    const io = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((e) => e.isIntersecting);
+        if (visible.length === 0) return;
+        const top = visible.reduce((a, b) => (a.intersectionRatio > b.intersectionRatio ? a : b));
+        setActive(top.target.id);
+      },
+      { rootMargin: '-45% 0px -45% 0px', threshold: 0 },
+    );
+
+    targets.forEach((el) => io.observe(el));
+    return () => io.disconnect();
   }, []);
 
-  // Con il menu aperto il body non deve scorrere sotto, e Esc lo chiude.
-  useEffect(() => {
-    if (!open) return;
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
-    window.addEventListener('keydown', onKey);
-    return () => {
-      document.body.style.overflow = previous;
-      window.removeEventListener('keydown', onKey);
-    };
-  }, [open]);
-
   return (
-    <>
-      <nav className={`nav${scrolled ? ' is-scrolled' : ''}`}>
-        <a className="brand" href="#top" aria-label="Riccardo Sensi — torna in cima">
-          <img className="brand-mark" src="/logo-mark.webp" width={256} height={256} alt="" />
-          <span className="brand-name">
-            Riccardo Sensi
-            <span className="brand-role">Full Stack Developer</span>
-          </span>
+    <nav className="site-nav" aria-label="Sezioni">
+      {SECTIONS.map(({ id, label, icon: Icon }) => (
+        <a
+          key={id}
+          href={`#${id}`}
+          className={`site-nav-item${active === id ? ' is-active' : ''}`}
+          aria-current={active === id ? 'true' : undefined}
+        >
+          <Icon aria-hidden="true" />
+          {/* In uno span perché su schermo stretto l'etichetta va nascosta alla
+              vista ma non a chi naviga con uno screen reader. */}
+          <span className="site-nav-label">{label}</span>
         </a>
-
-        <div className="nav-links">
-          {LINKS.map((link) => (
-            <a key={link.href} href={link.href}>
-              {link.label}
-            </a>
-          ))}
-        </div>
-
-        <div className="nav-right">
-          <a className="nav-cta" href="#contact">
-            Parliamone
-            <ArrowUpRight aria-hidden="true" />
-          </a>
-          <button
-            type="button"
-            className="nav-burger"
-            aria-label={open ? 'Chiudi il menu' : 'Apri il menu'}
-            aria-expanded={open}
-            onClick={() => setOpen((v) => !v)}
-          >
-            {open ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
-          </button>
-        </div>
-      </nav>
-
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            className="nav-sheet"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            {LINKS.map((link) => (
-              <a key={link.href} href={link.href} onClick={() => setOpen(false)}>
-                {link.label}
-              </a>
-            ))}
-            <a className="btn btn-primary" href="#contact" onClick={() => setOpen(false)}>
-              Parliamone
-              <ArrowUpRight aria-hidden="true" />
-            </a>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+      ))}
+    </nav>
   );
 }

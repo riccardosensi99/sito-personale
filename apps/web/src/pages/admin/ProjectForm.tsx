@@ -359,8 +359,11 @@ export function ProjectForm({ basePath }: { basePath: string }) {
         </form>
 
         <div className="form-preview">
-          <div className="section-kicker">Anteprima</div>
-          <div className="projects" style={{ display: 'block' }}>
+          <div className="preview-kicker">Anteprima</div>
+          {/* `site` porta con sé i token del sito: la card è la stessa del sito
+              vero, e qui dentro deve trovare i colori e i caratteri di là, non
+              quelli del backoffice. */}
+          <div className="site">
             <ProjectCard project={preview} index={0} />
           </div>
         </div>

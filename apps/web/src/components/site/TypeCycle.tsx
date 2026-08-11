@@ -53,13 +53,13 @@ export function TypeCycle({ words }: Props) {
   }, [len, erasing, word, words.length]);
 
   return (
-    <span className="lab-type">
+    <span className="site-type">
       {/* Per chi legge con uno screen reader l'elenco completo, una volta sola:
           un aria-live sul testo animato lo farebbe annunciare a ogni lettera. */}
       <span className="sr-only">{words.join(', ')}</span>
-      <span className="lab-type-text" aria-hidden="true">
+      <span className="site-type-text" aria-hidden="true">
         {word.slice(0, len)}
-        <i className="lab-type-caret" />
+        <i className="site-type-caret" />
       </span>
     </span>
   );

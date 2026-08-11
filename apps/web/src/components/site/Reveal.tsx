@@ -36,7 +36,7 @@ export function Reveal({ children, delay = 0, className = '' }: Props) {
   }, []);
 
   return (
-    <div ref={ref} className={`lab-reveal ${className}`} style={{ transitionDelay: `${delay}ms` }}>
+    <div ref={ref} className={`site-reveal ${className}`} style={{ transitionDelay: `${delay}ms` }}>
       {children}
     </div>
   );
