@@ -14,6 +14,9 @@ const ALLOWED = new Map([
   ['image/webp', '.webp'],
   ['image/avif', '.avif'],
   ['image/svg+xml', '.svg'],
+  // Il CV: stesso canale delle immagini, stesso volume, stesso nome generato
+  // dal server. È l'unico non-immagine ammesso.
+  ['application/pdf', '.pdf'],
 ]);
 
 const upload = multer({
@@ -28,7 +31,7 @@ const upload = multer({
   limits: { fileSize: 4 * 1024 * 1024, files: 1 },
   fileFilter: (_req, file, cb) => {
     if (!ALLOWED.has(file.mimetype)) {
-      cb(new HttpError(400, 'Formato non supportato: usa png, jpg, webp, avif o svg'));
+      cb(new HttpError(400, 'Formato non supportato: usa png, jpg, webp, avif, svg o pdf'));
       return;
     }
     cb(null, true);
