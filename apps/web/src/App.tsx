@@ -10,6 +10,7 @@ const AdminApp = lazy(() => import('./pages/admin/AdminApp'));
 // Prova di direzione visiva, fuori dalla home e in un chunk suo: finché è un
 // esperimento non deve pesare su chi apre il sito.
 const Lab = lazy(() => import('./pages/Lab'));
+const LabCookie = lazy(() => import('./pages/LabCookie'));
 
 const ADMIN_PATH = (import.meta.env.VITE_ADMIN_PATH ?? 'admin').replace(/^\/+|\/+$/g, '');
 
@@ -26,6 +27,14 @@ export function App() {
             element={
               <Suspense fallback={null}>
                 <Lab />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/lab/cookie"
+            element={
+              <Suspense fallback={null}>
+                <LabCookie />
               </Suspense>
             }
           />

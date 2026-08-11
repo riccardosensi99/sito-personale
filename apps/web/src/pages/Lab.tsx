@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, Download, Mail } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { api } from '../lib/api';
+import { CookieNotice } from '../components/lab/CookieNotice';
 // lucide non distribuisce più le icone dei marchi: stanno in BrandIcons.
 import { GithubIcon, LinkedinIcon } from '../components/site/BrandIcons';
 import { GooeyCursor } from '../components/lab/GooeyCursor';
@@ -159,6 +161,7 @@ export default function Lab() {
     <div className="lab" ref={scene}>
       <GooeyCursor />
       <LabNav />
+      <CookieNotice />
 
       {/* ═══ Home ═══ */}
       <section className="lab-hero" id="home">
@@ -331,6 +334,7 @@ export default function Lab() {
         <p className="lab-footer-note">
           © {new Date().getFullYear()} Riccardo Sensi
           <span>P. IVA {PIVA}</span>
+          <Link to="/lab/cookie">Cookie</Link>
         </p>
       </footer>
     </div>
