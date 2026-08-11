@@ -22,7 +22,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
       'AI AGENTS',
     ],
     about: {
-      kicker: '01 — Chi sono',
+      kicker: 'Chi sono',
       title: 'Scrivo software che _regge_ quando smette di essere una demo.',
       paragraphs: [
         "Lavoro sul pezzo intero: il database, l'API, l'interfaccia e la macchina su cui gira. Mi interessa la parte che di solito si scopre dopo — i permessi, i casi limite, cosa succede quando due persone salvano lo stesso record nello stesso momento.",
@@ -37,7 +37,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
       ],
     },
     projects: {
-      kicker: '02 — Progetti',
+      kicker: 'Progetti',
       title: 'Cose che girano, non slide.',
       empty: 'Nessun progetto pubblicato al momento. Torna a trovarmi tra poco.',
     },
@@ -45,7 +45,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     /// sito già dichiara nel nastro, nelle competenze e nella bio, rimesse
     /// nell'ordine in cui le cerca chi deve decidere se scrivere.
     services: {
-      kicker: '03 — Servizi',
+      kicker: 'Servizi',
       title: 'Quello per cui mi _chiamano_.',
       items: [
         {
@@ -67,7 +67,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
       ],
     },
     contact: {
-      kicker: '04 — Contatti',
+      kicker: 'Contatti',
       title: "Hai un'idea che _deve funzionare_?",
     },
     piva: '04030250544',
