@@ -7,6 +7,10 @@ import Home from './pages/Home';
 // chi apre il sito pubblico non ne scarica nemmeno un byte.
 const AdminApp = lazy(() => import('./pages/admin/AdminApp'));
 
+// Prova di direzione visiva, fuori dalla home e in un chunk suo: finché è un
+// esperimento non deve pesare su chi apre il sito.
+const Lab = lazy(() => import('./pages/Lab'));
+
 const ADMIN_PATH = (import.meta.env.VITE_ADMIN_PATH ?? 'admin').replace(/^\/+|\/+$/g, '');
 
 export function App() {
@@ -17,6 +21,14 @@ export function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route
+            path="/lab"
+            element={
+              <Suspense fallback={null}>
+                <Lab />
+              </Suspense>
+            }
+          />
           <Route
             path={`/${ADMIN_PATH}/*`}
             element={

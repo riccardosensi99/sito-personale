@@ -1,0 +1,534 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Prova di direzione visiva — fondo chiaro, accento arancio
+   Tutto è annidato sotto .lab o .lab-mode: il sito scuro non deve accorgersi
+   che questo foglio esiste.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.lab-mode {
+  --lab-bg: #e9e6e5;
+  --lab-bg-deep: #dedad8;
+  --lab-ink: #14110f;
+  --lab-muted: #6d6663;
+  --lab-line: rgba(20, 17, 15, 0.12);
+  --lab-accent: #ff5324;
+
+  --lab-display: "Space Grotesk", system-ui, sans-serif;
+  --lab-body: "Inter", system-ui, sans-serif;
+
+  background: var(--lab-bg);
+}
+
+/* Il cursore vero sparisce solo dove ce n'è uno finto a sostituirlo: la query
+   deve restare identica al gate di GooeyCursor. */
+@media (any-pointer: fine) {
+  .lab-mode,
+  .lab-mode * {
+    cursor: none;
+  }
+}
+
+.lab {
+  position: relative;
+  min-height: 100svh;
+  overflow: hidden;
+  background: var(--lab-bg);
+  color: var(--lab-ink);
+  font-family: var(--lab-body);
+
+  /* Riempite dal puntatore, lette dagli strati per la parallasse. */
+  --px: 0;
+  --py: 0;
+}
+
+/* Alone caldo in alto a sinistra, come nel riferimento. */
+.lab::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 38% 34% at 22% 24%,
+    rgba(255, 83, 36, 0.14),
+    transparent 68%
+  );
+}
+
+/* ═══ Stanza in prospettiva ══════════════════════════════════════════════ */
+
+.lab-room {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  /* Si muove al contrario del puntatore e pochissimo: è il fondale, se insegue
+     quanto il testo la profondità si appiattisce. */
+  transform: translate3d(calc(var(--px) * -14px), calc(var(--py) * -14px), 0);
+}
+
+.lab-room-stage {
+  position: relative;
+  width: min(78vw, 1000px);
+  aspect-ratio: 1 / 0.82;
+}
+
+.lab-room-frame {
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--lab-line);
+  transform: scale(var(--frame-scale));
+  animation: lab-room-fly 14s linear infinite;
+}
+
+/* Le cornici corrono dal fondo verso di noi, sfumando ai due estremi: senza il
+   dissolvenza in coda si vedrebbero comparire e sparire di scatto. */
+@keyframes lab-room-fly {
+  0%   { transform: scale(0.14); opacity: 0; }
+  12%  { opacity: 1; }
+  82%  { opacity: 1; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+
+.lab-room-rays {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.lab-room-rays path {
+  stroke: var(--lab-line);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  fill: none;
+}
+
+/* ═══ Testata ════════════════════════════════════════════════════════════ */
+
+.lab-top {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: start;
+  gap: var(--sp-5);
+  padding: 34px clamp(20px, 4vw, 56px) 0;
+}
+
+.lab-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--lab-display);
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--lab-accent);
+}
+
+/* Stella a quattro punte: due rombi incrociati, nessun asset da caricare. */
+.lab-brand-star {
+  width: 26px;
+  height: 26px;
+  background: var(--lab-accent);
+  clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+  animation: lab-spin 9s linear infinite;
+}
+
+@keyframes lab-spin {
+  to { transform: rotate(360deg); }
+}
+
+.lab-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 14px 34px rgba(20, 17, 15, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.lab-nav-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--lab-muted);
+  transition: color 200ms ease, background 200ms ease;
+}
+
+.lab-nav-item svg {
+  width: 17px;
+  height: 17px;
+}
+
+.lab-nav-item:hover { color: var(--lab-ink); }
+
+.lab-nav-item.is-active {
+  background: var(--lab-accent);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(255, 83, 36, 0.36);
+}
+
+.lab-intro {
+  justify-self: end;
+  max-width: 330px;
+  text-align: right;
+}
+
+.lab-signature {
+  margin: 0 0 10px;
+  font-family: var(--lab-display);
+  font-size: 26px;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: -0.02em;
+}
+
+.lab-bio {
+  margin: 0 0 18px;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--lab-muted);
+}
+
+.lab-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 22px;
+  border: 1px solid var(--lab-ink);
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  transition: background 220ms ease, color 220ms ease, transform 220ms ease;
+}
+
+.lab-cta svg { width: 15px; height: 15px; }
+
+.lab-cta:hover {
+  background: var(--lab-ink);
+  color: var(--lab-bg);
+  transform: translateY(-2px);
+}
+
+/* ═══ Titolo ═════════════════════════════════════════════════════════════ */
+
+.lab-stage {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  padding-top: clamp(30px, 7vh, 90px);
+}
+
+.lab-title {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  text-align: center;
+  font-family: var(--lab-display);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  /* Segue il puntatore più della stanza: è lo scarto fra i due a dare il rilievo. */
+  transform: translate3d(calc(var(--px) * 16px), calc(var(--py) * 10px), 0);
+}
+
+.lab-title-ghost {
+  display: block;
+  font-size: clamp(48px, 9.5vw, 132px);
+  color: rgba(20, 17, 15, 0.13);
+}
+
+.lab-title-live {
+  display: block;
+  font-size: clamp(34px, 6.6vw, 92px);
+}
+
+.lab-type-text {
+  /* Testo vuoto, solo contorno: sotto ci deve passare la stanza. */
+  color: transparent;
+  -webkit-text-stroke: 1.6px var(--lab-accent);
+  white-space: pre;
+}
+
+.lab-type-caret {
+  display: inline-block;
+  width: 0.06em;
+  height: 0.82em;
+  margin-left: 0.04em;
+  vertical-align: baseline;
+  background: var(--lab-accent);
+  -webkit-text-stroke: 0;
+  animation: lab-caret 1s steps(1) infinite;
+}
+
+@keyframes lab-caret {
+  50% { opacity: 0; }
+}
+
+/* ═══ Piedistallo del ritratto ═══════════════════════════════════════════ */
+
+.lab-portrait {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: min(46vw, 430px);
+  height: min(56vh, 470px);
+  transform: translate3d(calc(-50% + var(--px) * 8px), 0, 0);
+  pointer-events: none;
+}
+
+/* Appena accennato: deve suggerire dove andrà il ritratto, non competere con
+   il titolo che gli passa davanti. */
+.lab-portrait-arch {
+  position: absolute;
+  inset: 0;
+  border-radius: 50% 50% 0 0 / 62% 62% 0 0;
+  background: linear-gradient(180deg, rgba(20, 17, 15, 0.03), transparent 72%);
+  border: 1px solid rgba(20, 17, 15, 0.07);
+  border-bottom: 0;
+}
+
+/* ═══ Numeri ═════════════════════════════════════════════════════════════ */
+
+.lab-stats {
+  position: absolute;
+  left: clamp(20px, 4vw, 56px);
+  bottom: 21vh;
+  z-index: 3;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  width: min(30vw, 240px);
+}
+
+.lab-stats li {
+  padding: 16px 0;
+  border-top: 1px solid var(--lab-line);
+}
+
+.lab-stats strong {
+  display: block;
+  font-family: var(--lab-display);
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--lab-accent);
+  letter-spacing: -0.02em;
+}
+
+.lab-stats span {
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--lab-muted);
+}
+
+/* ═══ Nastri ═════════════════════════════════════════════════════════════ */
+
+/* I due nastri partono dalla stessa quota con inclinazioni opposte: si
+   incrociano al centro esatto dello schermo, che è l'unico punto in cui la
+   sovrapposizione legge come voluta e non come una collisione. */
+.lab-marquee {
+  position: absolute;
+  z-index: 4;
+  left: -8%;
+  bottom: 7vh;
+  width: 116%;
+  overflow: hidden;
+  padding: 13px 0;
+  background: var(--lab-ink);
+  transform: rotate(var(--tilt));
+}
+
+/* L'arancio passa sopra al nero all'incrocio. */
+.lab-marquee:not(.lab-marquee--reverse) {
+  z-index: 5;
+  background: var(--lab-accent);
+  box-shadow: 0 16px 40px rgba(255, 83, 36, 0.26);
+}
+
+.lab-marquee-track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  animation: lab-slide linear infinite;
+}
+
+.lab-marquee--reverse .lab-marquee-track {
+  animation-direction: reverse;
+}
+
+/* Metà esatta della traccia: la seconda copia arriva dove era partita la prima. */
+@keyframes lab-slide {
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+.lab-marquee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 34px;
+  padding-right: 34px;
+  font-family: var(--lab-display);
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  color: #fff;
+}
+
+.lab-marquee-star {
+  width: 13px;
+  height: 13px;
+  flex: none;
+  background: currentColor;
+  clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+}
+
+/* ═══ Cursore liquido ════════════════════════════════════════════════════ */
+
+.lab-cursor {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 260ms ease;
+}
+
+/* Compare solo quando il rAF gira davvero: senza, i blob resterebbero fermi
+   nell'angolo in alto a sinistra su touch e con JS a metà. */
+.lab-cursor.is-live { opacity: 1; }
+.lab-cursor.is-out { opacity: 0; }
+
+.lab-cursor-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.lab-cursor-goo {
+  position: absolute;
+  inset: 0;
+  filter: url(#lab-goo);
+}
+
+/* Niente will-change qui: promuoverebbe ogni blob a un layer di composizione a
+   sé, e il filtro del genitore smetterebbe di saldarli fra loro. La fluidità la
+   dà già il fatto che si muovono di sola transform. */
+.lab-blob {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+  background: var(--lab-ink);
+}
+
+/* Sopra un elemento interattivo la testa si ritira e lascia il posto
+   all'anello: un blob che cresce coprirebbe l'etichetta del pulsante che si sta
+   per premere, che è esattamente ciò che si vuole leggere in quel momento. */
+.lab-blob--head {
+  transition: width 240ms ease, height 240ms ease, background 240ms ease;
+}
+
+.lab-cursor.is-hovering .lab-blob--head {
+  width: 11px !important;
+  height: 11px !important;
+  background: var(--lab-accent);
+}
+
+/* La posizione arriva da translate, la scala da una proprietà separata: se
+   stessero entrambe dentro transform, animare la seconda farebbe ritardare
+   anche la prima e l'anello arriverebbe sempre in ritardo sul puntatore. */
+.lab-ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  border: 2px solid var(--lab-accent);
+  border-radius: 50%;
+  translate: var(--cx, 50vw) var(--cy, 50vh);
+  scale: 0.3;
+  opacity: 0;
+  transition: scale 280ms cubic-bezier(0.22, 1, 0.36, 1), opacity 200ms ease;
+}
+
+.lab-cursor.is-hovering .lab-ring {
+  scale: 1;
+  opacity: 1;
+}
+
+/* ═══ Schermi stretti ════════════════════════════════════════════════════ */
+
+/* Sotto i 900px la scena passa da "quadro" a colonna. Le misure si stringono
+   tutte insieme: i nastri restano ancorati al fondo di .lab, quindi basta che
+   il contenuto sfori l'altezza dello schermo perché finiscano sotto la piega. */
+@media (max-width: 900px) {
+  .lab-top {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 14px;
+    padding-top: 22px;
+    text-align: center;
+  }
+
+  .lab-intro {
+    justify-self: center;
+    text-align: center;
+  }
+
+  .lab-bio { margin-bottom: 12px; font-size: 13.5px; }
+  .lab-brand { font-size: 25px; }
+  .lab-signature { font-size: 22px; margin-bottom: 6px; }
+  .lab-cta { padding: 10px 18px; }
+
+  .lab-nav { order: 3; flex-wrap: wrap; justify-content: center; padding: 5px; }
+  .lab-nav-item { padding: 9px 14px; font-size: 14px; }
+
+  .lab-stage { padding-top: 18px; }
+  .lab-title-ghost { font-size: clamp(34px, 11vw, 60px); }
+  .lab-title-live { font-size: clamp(26px, 8vw, 46px); }
+
+  .lab-stats {
+    position: static;
+    width: auto;
+    margin: 22px auto 0;
+    padding: 0 24px 132px;
+  }
+
+  .lab-stats li { padding: 11px 0; }
+  .lab-stats strong { font-size: 25px; }
+
+  .lab-portrait { display: none; }
+  .lab-marquee { padding: 10px 0; }
+  .lab-marquee-item { font-size: 16px; gap: 24px; padding-right: 24px; }
+}
+
+/* ═══ Movimento ridotto ══════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  .lab-room-frame,
+  .lab-brand-star,
+  .lab-marquee-track,
+  .lab-type-caret {
+    animation: none;
+  }
+
+  /* Ferme, ma non tutte sovrapposte al centro: senza animazione la scala di
+     partenza del keyframe non viene mai applicata. */
+  .lab-room-frame {
+    transform: scale(var(--frame-scale));
+    opacity: 1;
+  }
+}
