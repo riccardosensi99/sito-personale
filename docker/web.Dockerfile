@@ -6,9 +6,13 @@ WORKDIR /app
 ARG VITE_API_URL=/api
 ARG VITE_ADMIN_PATH=admin
 ARG VITE_SITE_URL=https://riccardosensi.com
+# dark = il sito storico, light = la direzione chiara. Il default tiene il sito
+# storico: un build senza variabile non deve cambiare faccia da solo.
+ARG VITE_HOME_STYLE=dark
 ENV VITE_API_URL=$VITE_API_URL \
     VITE_ADMIN_PATH=$VITE_ADMIN_PATH \
-    VITE_SITE_URL=$VITE_SITE_URL
+    VITE_SITE_URL=$VITE_SITE_URL \
+    VITE_HOME_STYLE=$VITE_HOME_STYLE
 
 COPY package.json package-lock.json ./
 COPY apps/web/package.json apps/web/
