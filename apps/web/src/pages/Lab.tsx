@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, Download, Mail } from 'lucide-react';
+import { api } from '../lib/api';
 // lucide non distribuisce più le icone dei marchi: stanno in BrandIcons.
 import { GithubIcon, LinkedinIcon } from '../components/site/BrandIcons';
 import { GooeyCursor } from '../components/lab/GooeyCursor';
@@ -42,9 +43,7 @@ const CONTATTI = {
   linkedin: 'https://linkedin.com/in/riccardo-sensi-developer',
 };
 
-// TODO: il PDF non è ancora nel repo. Finché non lo si mette in
-// apps/web/public/ questo link risponde 404.
-const CV_URL = '/riccardo-sensi-cv.pdf';
+const PIVA = '04030250544';
 
 const COMPETENZE = [
   { titolo: 'Backend', voci: 'Node, Express, Prisma, PostgreSQL, autenticazione e ruoli' },
@@ -79,6 +78,35 @@ const PROGETTI = [
     tags: ['React', 'Docker', 'Prisma'],
   },
 ];
+
+/**
+ * L'indirizzo del CV caricato dal backoffice, sotto la chiave `cv` delle
+ * impostazioni pubbliche. È l'unico dato che questa prova va a prendere: senza,
+ * il pulsante nel footer punterebbe a un file che non esiste, ed è esattamente
+ * ciò che il backoffice promette di non far succedere.
+ */
+function useCvUrl() {
+  const [url, setUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    let vivo = true;
+    api
+      .get<Record<string, unknown>>('/settings')
+      .then((settings) => {
+        const cv = settings.cv;
+        if (!vivo || !cv || typeof cv !== 'object' || !('url' in cv)) return;
+        const value = (cv as { url?: unknown }).url;
+        if (typeof value === 'string' && value) setUrl(value);
+      })
+      .catch(() => undefined);
+
+    return () => {
+      vivo = false;
+    };
+  }, []);
+
+  return url;
+}
 
 /**
  * Parallasse legata al puntatore. Scrive due variabili CSS sulla scena e lascia
@@ -118,6 +146,7 @@ function usePointerParallax<T extends HTMLElement>() {
 
 export default function Lab() {
   const scene = usePointerParallax<HTMLDivElement>();
+  const cvUrl = useCvUrl();
 
   // La classe sta sull'elemento radice e non sulla pagina: fondo, cursore e
   // scorrimento morbido devono valere anche oltre il contenuto.
@@ -204,6 +233,11 @@ export default function Lab() {
               Preferisco poche schermate che fanno esattamente ciò che serve a una dashboard piena di
               grafici che nessuno guarda.
             </p>
+            <p className="lab-lead lab-lead--mark">
+              Collaboro con <strong>aziende</strong> su progetti continuativi e ho lavorato con
+              <strong> startup</strong> nella fase in cui bisogna costruire in fretta senza fare
+              debito che poi si paga con gli interessi.
+            </p>
           </Reveal>
 
           <div className="lab-skills">
@@ -272,10 +306,14 @@ export default function Lab() {
             </div>
           </div>
 
-          <a className="lab-cv" href={CV_URL} download>
-            <Download aria-hidden="true" />
-            Scarica il CV
-          </a>
+          {/* Niente pulsante se il CV non è stato caricato: meglio assente che
+              puntato su un 404. */}
+          {cvUrl && (
+            <a className="lab-cv" href={cvUrl} download>
+              <Download aria-hidden="true" />
+              Scarica il CV
+            </a>
+          )}
 
           <div className="lab-social">
             <a href={CONTATTI.github} target="_blank" rel="noreferrer" aria-label="GitHub">
@@ -290,7 +328,10 @@ export default function Lab() {
           </div>
         </div>
 
-        <p className="lab-footer-note">© {new Date().getFullYear()} Riccardo Sensi</p>
+        <p className="lab-footer-note">
+          © {new Date().getFullYear()} Riccardo Sensi
+          <span>P. IVA {PIVA}</span>
+        </p>
       </footer>
     </div>
   );

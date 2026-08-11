@@ -6,6 +6,7 @@ import { Dashboard } from './Dashboard';
 import { ProjectForm } from './ProjectForm';
 import { GithubImport } from './GithubImport';
 import { SettingsEditor } from './SettingsEditor';
+import { CvManager } from './CvManager';
 import { Security } from './Security';
 import '../../styles/admin.css';
 
@@ -35,11 +36,16 @@ export default function AdminApp({ basePath }: { basePath: string }) {
     const previousTitle = document.title;
     document.title = 'Backoffice';
 
+    // Il tema chiaro sta sulla radice e non sulla pagina: il fondo deve valere
+    // anche oltre il contenuto, e la schermata di login vive fuori dalla shell.
+    document.documentElement.classList.add('admin-mode');
+
     void refreshMe();
 
     return () => {
       meta.remove();
       document.title = previousTitle;
+      document.documentElement.classList.remove('admin-mode');
     };
   }, [refreshMe]);
 
@@ -70,7 +76,7 @@ function AdminShell({
     <div className="admin-shell">
       <aside className="admin-sidebar">
         <a className="brand" href="/">
-          <span className="brand-mark">RS</span>
+          <img className="brand-mark" src="/logo-mark.webp" width={256} height={256} alt="" />
           <span>Backoffice</span>
         </a>
 
@@ -81,6 +87,7 @@ function AdminShell({
           <NavLink to={`${basePath}/nuovo`}>Nuovo progetto</NavLink>
           <NavLink to={`${basePath}/github`}>Importa da GitHub</NavLink>
           <NavLink to={`${basePath}/contenuti`}>Contenuti sito</NavLink>
+          <NavLink to={`${basePath}/cv`}>Curriculum</NavLink>
           <NavLink to={`${basePath}/sicurezza`}>Sicurezza</NavLink>
         </nav>
 
@@ -109,6 +116,7 @@ function AdminShell({
           <Route path="progetti/:id" element={<ProjectForm basePath={basePath} />} />
           <Route path="github" element={<GithubImport basePath={basePath} />} />
           <Route path="contenuti" element={<SettingsEditor />} />
+          <Route path="cv" element={<CvManager />} />
           <Route path="sicurezza" element={<Security />} />
           <Route path="*" element={<Navigate to={basePath} replace />} />
         </Routes>
