@@ -18,6 +18,26 @@ export default defineConfig(({ mode }) => {
         name: 'rs-site-url',
         transformIndexHtml: (html) => html.replaceAll('%SITE_URL%', siteUrl),
       },
+      {
+        // Il foglio del sito non deve bloccare il primo disegno.
+        //
+        // Un <link rel="stylesheet"> in head ferma il rendering di tutta la
+        // pagina finché non è sceso, e il nostro pesa 63KB: la copertina, che
+        // ha il suo stile in linea proprio per essere dipinta subito, restava
+        // ferma ad aspettarlo. Caricato come media="print" non blocca, e
+        // all'onload torna buono per tutti i media.
+        //
+        // Non c'è rischio di contenuto senza stile: sotto la copertina non si
+        // dipinge niente finché React non è arrivato, e React è sei volte più
+        // pesante di questo foglio.
+        name: 'rs-css-non-bloccante',
+        enforce: 'post',
+        transformIndexHtml: (html) =>
+          html.replace(
+            /<link rel="stylesheet"((?:(?!\bmedia=)[^>])*?)>/g,
+            `<link rel="stylesheet"$1 media="print" onload="this.media='all';this.onload=null">`,
+          ),
+      },
     ],
     envDir: '../../',
     server: {
