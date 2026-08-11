@@ -3,26 +3,41 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Portfolio di Riccardo Sensi, Full Stack Developer, Flutter Developer e AI enthusiast." />
-    <meta name="theme-color" content="#05070d" />
-    <meta name="color-scheme" content="dark" />
+
+    <!-- Questi meta valgono per la home. Le altre rotte se li riscrivono a
+         runtime da lib/seo.ts, dove ne esiste una copia: cambiandoli qui vanno
+         cambiati anche lì. %SITE_URL% lo sostituisce vite.config.ts, così
+         canonical e og puntano all'ambiente in cui il bundle è stato costruito. -->
+    <title>Riccardo Sensi — Full Stack Developer</title>
+    <meta
+      name="description"
+      content="Full stack developer. Costruisco gestionali, automazioni e interfacce che reggono anche quando i dati veri arrivano tutti insieme."
+    />
+    <meta name="author" content="Riccardo Sensi" />
+    <link rel="canonical" href="%SITE_URL%/" />
+
+    <meta name="theme-color" content="#e9e6e5" />
+    <meta name="color-scheme" content="light" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="canonical" href="https://riccardosensi.com/" />
 
     <!-- Il logo è il primo elemento dipinto nell'hero: vale la richiesta anticipata. -->
     <link rel="preload" as="image" href="/logo.webp" fetchpriority="high" />
 
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://riccardosensi.com/" />
+    <meta property="og:site_name" content="Riccardo Sensi" />
+    <meta property="og:locale" content="it_IT" />
+    <meta property="og:url" content="%SITE_URL%/" />
     <meta property="og:title" content="Riccardo Sensi — Full Stack Developer" />
-    <meta property="og:description" content="Web app, backend, mobile Flutter e automazioni AI. Progetti costruiti per essere usati." />
-    <meta property="og:image" content="https://riccardosensi.com/og.jpg" />
+    <meta
+      property="og:description"
+      content="Full stack developer. Costruisco gestionali, automazioni e interfacce che reggono anche quando i dati veri arrivano tutti insieme."
+    />
+    <meta property="og:image" content="%SITE_URL%/og.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Riccardo Sensi — Full Stack Developer" />
     <meta name="twitter:card" content="summary_large_image" />
-
-    <title>Riccardo Sensi — Full Stack Developer</title>
   </head>
   <body>
     <div id="root"></div>

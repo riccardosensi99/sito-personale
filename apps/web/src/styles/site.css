@@ -918,8 +918,11 @@
   white-space: nowrap;
 }
 
+/* Su tutta la larghezza e non solo sotto il testo: incolonnati con la seconda
+   colonna i bottoni restano rientrati a sinistra della quantità che occupa il
+   pallino, e da fermi si leggono come storti. */
 .site-cookie-actions {
-  grid-column: 2;
+  grid-column: 1 / -1;
   display: flex;
   gap: 10px;
   flex-wrap: wrap;

@@ -13,6 +13,7 @@ import { Reveal } from '../components/site/Reveal';
 import { TypeCycle } from '../components/site/TypeCycle';
 import { useSiteData } from '../hooks/useSiteData';
 import { enfasi } from '../lib/enfasi';
+import { SEO_HOME, SITE_URL, useJsonLd, useSeo } from '../lib/seo';
 import '../styles/site.css';
 
 /**
@@ -68,6 +69,39 @@ export default function Home() {
 
   // Il CV è rimosso scrivendo `{}` sulla chiave: conta l'url, non la chiave.
   const cvUrl = settings.cv?.url || null;
+
+  // Rimessi da capo perché tornando da /cookie sarebbero rimasti i suoi.
+  useSeo(SEO_HOME);
+
+  // Il titolo della pagina è un h1 che si riscrive da solo e i recapiti sono
+  // icone: nessuna delle due cose si legge come un dato. Qui invece sì, e sono
+  // gli stessi che si curano dal backoffice.
+  useJsonLd({
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Person',
+        '@id': `${SITE_URL}/#persona`,
+        name: home.nome,
+        jobTitle: home.ruolo,
+        description: home.bio,
+        url: `${SITE_URL}/`,
+        image: `${SITE_URL}/og.jpg`,
+        email: `mailto:${contact.email}`,
+        ...(home.piva ? { vatID: home.piva } : {}),
+        knowsAbout: home.about.skills.map(({ title }) => title),
+        sameAs: [contact.github, contact.linkedin].filter(Boolean),
+      },
+      {
+        '@type': 'WebSite',
+        '@id': `${SITE_URL}/#sito`,
+        url: `${SITE_URL}/`,
+        name: home.nome,
+        inLanguage: 'it-IT',
+        author: { '@id': `${SITE_URL}/#persona` },
+      },
+    ],
+  });
 
   // La classe sta sull'elemento radice e non sulla pagina: fondo, cursore e
   // scorrimento morbido devono valere anche oltre il contenuto.
