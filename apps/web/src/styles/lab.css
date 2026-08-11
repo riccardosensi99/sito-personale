@@ -1,0 +1,1122 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Prova di direzione visiva — fondo chiaro, accento arancio
+   Tutto è annidato sotto .lab o .lab-mode: il sito scuro non deve accorgersi
+   che questo foglio esiste.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.lab-mode {
+  --lab-bg: #e9e6e5;
+  --lab-bg-deep: #dedad8;
+  --lab-ink: #14110f;
+  --lab-muted: #6d6663;
+  --lab-line: rgba(20, 17, 15, 0.12);
+  --lab-accent: #ff5324;
+
+  --lab-display: "Space Grotesk", system-ui, sans-serif;
+  --lab-body: "Inter", system-ui, sans-serif;
+  --lab-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  background: var(--lab-bg);
+  scroll-behavior: smooth;
+  /* La pillola è fissa e coprirebbe l'inizio della sezione a cui si salta. */
+  scroll-padding-top: 110px;
+}
+
+/* Il cursore vero sparisce solo dove ce n'è uno finto a sostituirlo: la query
+   deve restare identica al gate di GooeyCursor. */
+@media (any-pointer: fine) {
+  .lab-mode,
+  .lab-mode * {
+    cursor: none;
+  }
+}
+
+.lab {
+  position: relative;
+  background: var(--lab-bg);
+  color: var(--lab-ink);
+  font-family: var(--lab-body);
+  /* clip e non hidden: hidden su un asse solo creerebbe un contenitore di
+     scorrimento e romperebbe position: sticky più in basso. */
+  overflow-x: clip;
+
+  /* Riempite dal puntatore, lette dagli strati per la parallasse. */
+  --px: 0;
+  --py: 0;
+}
+
+/* global.css colora e spazia alcuni elementi per selettore nudo — `section`,
+   `footer`, `::selection` — pensando al sito scuro. Sono regole d'elemento,
+   quindi arrivano fin qui: si annullano sul posto, senza toccare il foglio del
+   sito vero. */
+.lab :where(section, footer) {
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
+.lab ::selection {
+  background: rgba(255, 83, 36, 0.28);
+  color: var(--lab-ink);
+}
+
+/* La prima schermata resta il quadro chiuso di prima: stanza, nastri e
+   piedistallo sono ancorati qui dentro, non alla pagina intera. */
+.lab-hero {
+  position: relative;
+  min-height: 100svh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Alone caldo in alto a sinistra, come nel riferimento. */
+.lab-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 38% 34% at 22% 24%,
+    rgba(255, 83, 36, 0.14),
+    transparent 68%
+  );
+}
+
+/* ═══ Stanza in prospettiva ══════════════════════════════════════════════ */
+
+.lab-room {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  /* Si muove al contrario del puntatore e pochissimo: è il fondale, se insegue
+     quanto il testo la profondità si appiattisce. */
+  transform: translate3d(calc(var(--px) * -14px), calc(var(--py) * -14px), 0);
+}
+
+.lab-room-stage {
+  position: relative;
+  width: min(78vw, 1000px);
+  aspect-ratio: 1 / 0.82;
+}
+
+.lab-room-frame {
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--lab-line);
+  transform: scale(var(--frame-scale));
+  animation: lab-room-fly 14s linear infinite;
+}
+
+/* Le cornici corrono dal fondo verso di noi, sfumando ai due estremi: senza il
+   dissolvenza in coda si vedrebbero comparire e sparire di scatto. */
+@keyframes lab-room-fly {
+  0%   { transform: scale(0.14); opacity: 0; }
+  12%  { opacity: 1; }
+  82%  { opacity: 1; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+
+.lab-room-rays {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.lab-room-rays path {
+  stroke: var(--lab-line);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  fill: none;
+}
+
+/* ═══ Testata ════════════════════════════════════════════════════════════ */
+
+.lab-top {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-5);
+  padding: 30px clamp(20px, 4vw, 56px) 0;
+}
+
+.lab-brand {
+  display: inline-flex;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(20, 17, 15, 0.22);
+  transition: transform 300ms var(--lab-ease, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.lab-brand:hover { transform: rotate(-8deg) scale(1.06); }
+
+.lab-brand img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Fissa e centrata: resta a portata anche a metà pagina. */
+.lab-nav {
+  position: fixed;
+  top: 26px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 7px;
+  border-radius: 999px;
+  /* Quasi opaca: a metà pagina il testo che le scorre sotto restava leggibile
+     attraverso il vetro e sembrava un errore di sovrapposizione. */
+  background: rgba(247, 245, 244, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 16px 38px rgba(20, 17, 15, 0.16);
+  backdrop-filter: blur(14px);
+}
+
+.lab-nav-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--lab-muted);
+  transition: color 200ms ease, background 200ms ease;
+}
+
+.lab-nav-item svg {
+  width: 17px;
+  height: 17px;
+}
+
+.lab-nav-item:hover { color: var(--lab-ink); }
+
+.lab-nav-item.is-active {
+  background: var(--lab-accent);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(255, 83, 36, 0.36);
+}
+
+.lab-intro {
+  justify-self: end;
+  max-width: 330px;
+  text-align: right;
+}
+
+.lab-signature {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 11px;
+  margin: 0 0 10px;
+  font-family: var(--lab-display);
+  font-size: 26px;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: -0.02em;
+}
+
+.lab-signature img {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.lab-bio {
+  margin: 0 0 18px;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--lab-muted);
+}
+
+.lab-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 22px;
+  border: 1px solid var(--lab-ink);
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  transition: background 220ms ease, color 220ms ease, transform 220ms ease;
+}
+
+.lab-cta svg { width: 15px; height: 15px; }
+
+.lab-cta:hover {
+  background: var(--lab-ink);
+  color: var(--lab-bg);
+  transform: translateY(-2px);
+}
+
+/* ═══ Titolo ═════════════════════════════════════════════════════════════ */
+
+.lab-stage {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  padding-top: clamp(10px, 4vh, 50px);
+}
+
+.lab-title {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  text-align: center;
+  font-family: var(--lab-display);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  /* Segue il puntatore più della stanza: è lo scarto fra i due a dare il rilievo. */
+  transform: translate3d(calc(var(--px) * 16px), calc(var(--py) * 10px), 0);
+}
+
+.lab-title-ghost {
+  display: block;
+  font-size: clamp(48px, 9.5vw, 132px);
+  color: rgba(20, 17, 15, 0.13);
+}
+
+.lab-title-live {
+  display: block;
+  font-size: clamp(34px, 6.6vw, 92px);
+}
+
+.lab-type-text {
+  /* Testo vuoto, solo contorno: sotto ci deve passare la stanza. */
+  color: transparent;
+  -webkit-text-stroke: 1.6px var(--lab-accent);
+  white-space: pre;
+}
+
+.lab-type-caret {
+  display: inline-block;
+  width: 0.06em;
+  height: 0.82em;
+  margin-left: 0.04em;
+  vertical-align: baseline;
+  background: var(--lab-accent);
+  -webkit-text-stroke: 0;
+  animation: lab-caret 1s steps(1) infinite;
+}
+
+@keyframes lab-caret {
+  50% { opacity: 0; }
+}
+
+/* ═══ Piedistallo del ritratto ═══════════════════════════════════════════ */
+
+.lab-portrait {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: min(46vw, 430px);
+  height: min(56vh, 470px);
+  transform: translate3d(calc(-50% + var(--px) * 8px), 0, 0);
+  pointer-events: none;
+}
+
+/* Appena accennato: deve suggerire dove andrà il ritratto, non competere con
+   il titolo che gli passa davanti. */
+.lab-portrait-arch {
+  position: absolute;
+  inset: 0;
+  border-radius: 50% 50% 0 0 / 62% 62% 0 0;
+  background: linear-gradient(180deg, rgba(20, 17, 15, 0.03), transparent 72%);
+  border: 1px solid rgba(20, 17, 15, 0.07);
+  border-bottom: 0;
+}
+
+/* ═══ Numeri ═════════════════════════════════════════════════════════════ */
+
+.lab-stats {
+  position: absolute;
+  left: clamp(20px, 4vw, 56px);
+  bottom: 21vh;
+  z-index: 3;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  width: min(30vw, 240px);
+}
+
+.lab-stats li {
+  padding: 16px 0;
+  border-top: 1px solid var(--lab-line);
+}
+
+.lab-stats strong {
+  display: block;
+  font-family: var(--lab-display);
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--lab-accent);
+  letter-spacing: -0.02em;
+}
+
+.lab-stats span {
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--lab-muted);
+}
+
+/* ═══ Nastri ═════════════════════════════════════════════════════════════ */
+
+/* I due nastri partono dalla stessa quota con inclinazioni opposte: si
+   incrociano al centro esatto dello schermo, che è l'unico punto in cui la
+   sovrapposizione legge come voluta e non come una collisione. */
+.lab-marquee {
+  position: absolute;
+  z-index: 4;
+  left: -8%;
+  bottom: 7vh;
+  width: 116%;
+  overflow: hidden;
+  padding: 13px 0;
+  background: var(--lab-ink);
+  transform: rotate(var(--tilt));
+}
+
+/* L'arancio passa sopra al nero all'incrocio. */
+.lab-marquee:not(.lab-marquee--reverse) {
+  z-index: 5;
+  background: var(--lab-accent);
+  box-shadow: 0 16px 40px rgba(255, 83, 36, 0.26);
+}
+
+.lab-marquee-track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  animation: lab-slide linear infinite;
+}
+
+.lab-marquee--reverse .lab-marquee-track {
+  animation-direction: reverse;
+}
+
+/* Metà esatta della traccia: la seconda copia arriva dove era partita la prima. */
+@keyframes lab-slide {
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+.lab-marquee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 34px;
+  padding-right: 34px;
+  font-family: var(--lab-display);
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  color: #fff;
+}
+
+.lab-marquee-star {
+  width: 13px;
+  height: 13px;
+  flex: none;
+  background: currentColor;
+  clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+}
+
+/* ═══ Cursore liquido ════════════════════════════════════════════════════ */
+
+.lab-cursor {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 260ms ease;
+}
+
+/* Compare solo quando il rAF gira davvero: senza, i blob resterebbero fermi
+   nell'angolo in alto a sinistra su touch e con JS a metà. */
+.lab-cursor.is-live { opacity: 1; }
+.lab-cursor.is-out { opacity: 0; }
+
+.lab-cursor-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.lab-cursor-goo {
+  position: absolute;
+  inset: 0;
+  filter: url(#lab-goo);
+}
+
+/* Niente will-change qui: promuoverebbe ogni blob a un layer di composizione a
+   sé, e il filtro del genitore smetterebbe di saldarli fra loro. La fluidità la
+   dà già il fatto che si muovono di sola transform. */
+.lab-blob {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+  background: var(--lab-ink);
+}
+
+/* Sopra un elemento interattivo la testa si ritira e lascia il posto
+   all'anello: un blob che cresce coprirebbe l'etichetta del pulsante che si sta
+   per premere, che è esattamente ciò che si vuole leggere in quel momento. */
+.lab-blob--head {
+  transition: width 240ms ease, height 240ms ease, background 240ms ease;
+}
+
+.lab-cursor.is-hovering .lab-blob--head {
+  width: 11px !important;
+  height: 11px !important;
+  background: var(--lab-accent);
+}
+
+/* La posizione arriva da translate, la scala da una proprietà separata: se
+   stessero entrambe dentro transform, animare la seconda farebbe ritardare
+   anche la prima e l'anello arriverebbe sempre in ritardo sul puntatore. */
+.lab-ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  border: 2px solid var(--lab-accent);
+  border-radius: 50%;
+  translate: var(--cx, 50vw) var(--cy, 50vh);
+  scale: 0.3;
+  opacity: 0;
+  transition: scale 280ms cubic-bezier(0.22, 1, 0.36, 1), opacity 200ms ease;
+}
+
+.lab-cursor.is-hovering .lab-ring {
+  scale: 1;
+  opacity: 1;
+}
+
+/* ═══ Sezioni ════════════════════════════════════════════════════════════ */
+
+.lab-section {
+  position: relative;
+  z-index: 2;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: clamp(90px, 14vh, 170px) clamp(20px, 4vw, 56px);
+}
+
+.lab-kicker {
+  margin: 0 0 18px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--lab-accent);
+}
+
+.lab-h2 {
+  max-width: 15ch;
+  margin: 0 0 40px;
+  font-family: var(--lab-display);
+  font-size: clamp(32px, 5vw, 62px);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+
+.lab-h2 em {
+  font-style: normal;
+  color: transparent;
+  -webkit-text-stroke: 1.4px var(--lab-accent);
+}
+
+.lab-h2--big { max-width: 18ch; }
+
+/* La comparsa: sale e si accende una volta sola, quando entra nello schermo. */
+.lab-reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 620ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.lab-reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ═══ Chi sono ═══════════════════════════════════════════════════════════ */
+
+.lab-about {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(30px, 5vw, 70px);
+  align-items: start;
+}
+
+.lab-lead {
+  margin: 0 0 18px;
+  font-size: clamp(16px, 1.35vw, 19px);
+  line-height: 1.62;
+  color: var(--lab-muted);
+}
+
+/* La riga sulle collaborazioni: staccata dal resto da un filetto d'accento,
+   perché è l'informazione che un committente cerca per prima. */
+.lab-lead--mark {
+  margin-top: 26px;
+  padding-left: 18px;
+  border-left: 2px solid var(--lab-accent);
+  color: var(--lab-ink);
+}
+
+.lab-lead--mark strong { font-weight: 600; }
+
+.lab-skills {
+  display: grid;
+  gap: 2px;
+}
+
+.lab-skill {
+  padding: 20px 0;
+  border-top: 1px solid var(--lab-line);
+}
+
+.lab-skill h3 {
+  margin: 0 0 6px;
+  font-family: var(--lab-display);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.lab-skill p {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--lab-muted);
+}
+
+/* ═══ Progetti ═══════════════════════════════════════════════════════════ */
+
+.lab-projects {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.lab-project {
+  position: relative;
+  height: 100%;
+  padding: 30px;
+  border: 1px solid var(--lab-line);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.5);
+  overflow: hidden;
+  transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 320ms ease, box-shadow 320ms ease;
+}
+
+/* L'arancio entra da sotto al passaggio del mouse, senza ridipingere la card. */
+.lab-project::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 3px;
+  background: var(--lab-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 380ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.lab-project:hover {
+  transform: translateY(-5px);
+  border-color: rgba(20, 17, 15, 0.2);
+  box-shadow: 0 22px 50px rgba(20, 17, 15, 0.1);
+}
+
+.lab-project:hover::after { transform: scaleX(1); }
+
+.lab-project-num {
+  position: absolute;
+  top: 22px;
+  right: 26px;
+  font-family: var(--lab-display);
+  font-size: 42px;
+  font-weight: 700;
+  color: rgba(20, 17, 15, 0.07);
+  line-height: 1;
+}
+
+.lab-project-type {
+  margin: 0 0 14px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--lab-accent);
+}
+
+.lab-project h3 {
+  margin: 0 0 10px;
+  font-family: var(--lab-display);
+  font-size: 25px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.lab-project-text {
+  margin: 0 0 20px;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--lab-muted);
+}
+
+.lab-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lab-tags li {
+  padding: 6px 12px;
+  border: 1px solid var(--lab-line);
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--lab-muted);
+}
+
+.lab-project-arrow {
+  position: absolute;
+  right: 26px;
+  bottom: 26px;
+  color: var(--lab-accent);
+  opacity: 0;
+  transform: translate(-6px, 6px);
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+
+.lab-project-arrow svg { width: 22px; height: 22px; }
+
+.lab-project:hover .lab-project-arrow {
+  opacity: 1;
+  transform: none;
+}
+
+/* ═══ Contatti ═══════════════════════════════════════════════════════════ */
+
+.lab-section--contact { text-align: center; }
+.lab-section--contact .lab-h2 { margin-inline: auto; }
+
+.lab-mail {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--lab-display);
+  font-size: clamp(19px, 2.4vw, 32px);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  border-bottom: 2px solid transparent;
+  transition: color 240ms ease, border-color 240ms ease;
+}
+
+.lab-mail svg { width: 0.8em; height: 0.8em; }
+
+.lab-mail:hover {
+  color: var(--lab-accent);
+  border-bottom-color: var(--lab-accent);
+}
+
+/* ═══ Footer ═════════════════════════════════════════════════════════════ */
+
+.lab-footer {
+  position: relative;
+  z-index: 2;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 40px clamp(20px, 4vw, 56px) 46px;
+  border-top: 1px solid var(--lab-line);
+}
+
+.lab-footer-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.lab-footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.lab-footer-brand img {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+}
+
+.lab-footer-brand div {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.35;
+}
+
+.lab-footer-brand strong {
+  font-family: var(--lab-display);
+  font-size: 16px;
+  letter-spacing: -0.01em;
+}
+
+.lab-footer-brand span {
+  font-size: 12.5px;
+  color: var(--lab-muted);
+}
+
+.lab-cv {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 26px;
+  border-radius: 999px;
+  background: var(--lab-accent);
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  box-shadow: 0 12px 30px rgba(255, 83, 36, 0.3);
+  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 260ms ease;
+}
+
+.lab-cv svg { width: 17px; height: 17px; }
+
+.lab-cv:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px rgba(255, 83, 36, 0.4);
+}
+
+.lab-social {
+  display: flex;
+  gap: 10px;
+}
+
+.lab-social a {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 1px solid var(--lab-line);
+  border-radius: 50%;
+  color: var(--lab-ink);
+  transition: background 240ms ease, color 240ms ease, border-color 240ms ease;
+}
+
+.lab-social svg { width: 18px; height: 18px; }
+
+.lab-social a:hover {
+  background: var(--lab-ink);
+  border-color: var(--lab-ink);
+  color: var(--lab-bg);
+}
+
+.lab-footer-note {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 30px 0 0;
+  font-size: 12.5px;
+  color: var(--lab-muted);
+}
+
+/* ═══ Avviso cookie ══════════════════════════════════════════════════════ */
+
+.lab-cookie {
+  position: fixed;
+  left: clamp(14px, 3vw, 28px);
+  bottom: clamp(14px, 3vw, 28px);
+  z-index: 60;
+  width: min(calc(100vw - 28px), 470px);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px 16px;
+  padding: 20px 22px;
+  border: 1px solid var(--lab-line);
+  border-radius: 22px;
+  background: rgba(250, 249, 248, 0.97);
+  box-shadow: 0 26px 60px rgba(20, 17, 15, 0.18);
+  backdrop-filter: blur(12px);
+  animation: lab-cookie-in 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes lab-cookie-in {
+  from { opacity: 0; transform: translateY(18px); }
+}
+
+.lab-cookie-icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--lab-accent);
+  color: #fff;
+}
+
+.lab-cookie-icon svg { width: 19px; height: 19px; }
+
+.lab-cookie p {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--lab-muted);
+}
+
+.lab-cookie strong { color: var(--lab-ink); font-weight: 600; }
+
+.lab-cookie a {
+  color: var(--lab-accent);
+  border-bottom: 1px solid currentColor;
+  white-space: nowrap;
+}
+
+.lab-cookie-actions {
+  grid-column: 2;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Rifiuta e accetta hanno lo stesso peso: un rifiuto più faticoso
+   dell'accettazione non è una scelta libera. */
+.lab-cookie-btn {
+  flex: 1;
+  min-width: 120px;
+  min-height: 42px;
+  padding: 0 18px;
+  border: 1px solid var(--lab-ink);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--lab-ink);
+  font-family: var(--lab-display);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 200ms ease, color 200ms ease;
+}
+
+.lab-cookie-btn:hover { background: rgba(20, 17, 15, 0.06); }
+
+.lab-cookie-btn--main {
+  background: var(--lab-accent);
+  border-color: var(--lab-accent);
+  color: #fff;
+}
+
+.lab-cookie-btn--main:hover { background: #e8451a; border-color: #e8451a; }
+
+/* ═══ Pagine di testo (informative) ══════════════════════════════════════ */
+
+.lab-doc {
+  position: relative;
+  z-index: 2;
+  max-width: 780px;
+  margin: 0 auto;
+  padding: clamp(40px, 8vh, 90px) clamp(20px, 4vw, 56px) clamp(60px, 10vh, 120px);
+}
+
+.lab-doc-back {
+  display: inline-block;
+  margin-bottom: 34px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--lab-muted);
+  transition: color 200ms ease;
+}
+
+.lab-doc-back:hover { color: var(--lab-accent); }
+
+.lab-doc-h3 {
+  margin: 46px 0 14px;
+  font-family: var(--lab-display);
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.lab-doc-table { display: grid; gap: 12px; }
+
+.lab-doc-row {
+  padding: 22px;
+  border: 1px solid var(--lab-line);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.lab-doc-row > div:first-child {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.lab-doc-row strong {
+  font-family: var(--lab-mono, "JetBrains Mono", monospace);
+  font-size: 15px;
+}
+
+.lab-doc-tag {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 83, 36, 0.12);
+  color: var(--lab-accent);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lab-doc-row p {
+  margin: 0 0 16px;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--lab-muted);
+}
+
+.lab-doc-row dl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 34px;
+  margin: 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--lab-line);
+}
+
+.lab-doc-row dt {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--lab-muted);
+}
+
+.lab-doc-row dd { margin: 3px 0 0; font-size: 14px; }
+
+.lab-doc-mail {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--lab-accent);
+}
+
+.lab-doc-mail svg { width: 15px; height: 15px; }
+
+/* ═══ Schermi stretti ════════════════════════════════════════════════════ */
+
+/* Sotto i 900px la scena passa da "quadro" a colonna. Le misure si stringono
+   tutte insieme: i nastri restano ancorati al fondo di .lab, quindi basta che
+   il contenuto sfori l'altezza dello schermo perché finiscano sotto la piega. */
+@media (max-width: 900px) {
+  .lab-top {
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    /* La pillola è fissa e sta qui sopra: senza spazio le finirebbe sotto. */
+    padding-top: 78px;
+    text-align: center;
+  }
+
+  .lab-intro { text-align: center; }
+  .lab-signature { justify-content: center; font-size: 22px; margin-bottom: 6px; }
+  .lab-signature img { width: 28px; height: 28px; }
+  .lab-bio { margin-bottom: 12px; font-size: 13.5px; }
+  .lab-brand { width: 52px; height: 52px; }
+  .lab-cta { padding: 10px 18px; }
+
+  .lab-nav { top: 14px; padding: 5px; }
+  .lab-nav-item { padding: 10px 13px; }
+
+  /* Restano le icone: quattro etichette su una riga sola non ci stanno, e la
+     pillola su due righe mangia mezza schermata. */
+  .lab-nav-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+
+  .lab-stage { padding-top: 18px; }
+  .lab-about { grid-template-columns: 1fr; }
+  .lab-projects { grid-template-columns: 1fr; }
+  .lab-section { padding-block: clamp(66px, 10vh, 100px); }
+  .lab-footer-main { flex-direction: column; align-items: flex-start; }
+  .lab-title-ghost { font-size: clamp(34px, 11vw, 60px); }
+  .lab-title-live { font-size: clamp(26px, 8vw, 46px); }
+
+  .lab-stats {
+    position: static;
+    width: auto;
+    margin: 22px auto 0;
+    padding: 0 24px 132px;
+  }
+
+  .lab-stats li { padding: 11px 0; }
+  .lab-stats strong { font-size: 25px; }
+
+  .lab-portrait { display: none; }
+  .lab-marquee { padding: 10px 0; }
+  .lab-marquee-item { font-size: 16px; gap: 24px; padding-right: 24px; }
+
+  .lab-cookie {
+    left: 12px;
+    right: 12px;
+    width: auto;
+    padding: 17px 18px;
+  }
+}
+
+/* ═══ Movimento ridotto ══════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  .lab-mode { scroll-behavior: auto; }
+
+  .lab-room-frame,
+  .lab-marquee-track,
+  .lab-type-caret {
+    animation: none;
+  }
+
+  /* Ferme, ma non tutte sovrapposte al centro: senza animazione la scala di
+     partenza del keyframe non viene mai applicata. */
+  .lab-room-frame {
+    transform: scale(var(--frame-scale));
+    opacity: 1;
+  }
+}

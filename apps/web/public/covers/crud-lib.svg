@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="220" viewBox="0 0 640 220">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1220"/>
+      <stop offset="1" stop-color="#05070d"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.34" cy="0.1" r="0.78">
+      <stop offset="0" stop-color="#4ea1ff" stop-opacity="0.42"/>
+      <stop offset="0.55" stop-color="#4ea1ff" stop-opacity="0.09"/>
+      <stop offset="1" stop-color="#4ea1ff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="0.86" cy="1" r="0.62">
+      <stop offset="0" stop-color="#22c3e6" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#22c3e6" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Alone d'appoggio dei motivi: sfumato, perche' un'ellisse a tinta piatta
+         lascia un bordo netto che si legge come un ovale sopra il fondo. -->
+    <radialGradient id="soft">
+      <stop offset="0" stop-color="#4ea1ff" stop-opacity="0.17"/>
+      <stop offset="1" stop-color="#4ea1ff" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0v32" fill="none" stroke="#ffffff" stroke-opacity="0.05" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="640" height="220" fill="url(#bg)"/>
+  <rect width="640" height="220" fill="url(#grid)"/>
+  <rect width="640" height="220" fill="url(#glow2)"/>
+  <rect width="640" height="220" fill="url(#glow)"/>
+  <ellipse cx="320" cy="182" rx="150" ry="22" fill="url(#soft)"/>
+  <path d="M188 88L188 107" stroke="#4ea1ff" stroke-opacity="0.16" stroke-width="1"/>
+  <path d="M452 88L452 107" stroke="#4ea1ff" stroke-opacity="0.16" stroke-width="1"/>
+  <path d="M188 107L188 126" stroke="#4ea1ff" stroke-opacity="0.16" stroke-width="1"/>
+  <path d="M452 107L452 126" stroke="#4ea1ff" stroke-opacity="0.16" stroke-width="1"/>
+  <path d="M188 126L188 145" stroke="#4ea1ff" stroke-opacity="0.16" stroke-width="1"/>
+  <path d="M452 126L452 145" stroke="#4ea1ff" stroke-opacity="0.16" stroke-width="1"/>
+  <path d="M320 56L452 88L320 120L188 88Z" fill="#4ea1ff" fill-opacity="0.03" stroke="#4ea1ff" stroke-opacity="0.16" stroke-width="1.1"/>
+  <path d="M320 75L452 107L320 139L188 107Z" fill="#4ea1ff" fill-opacity="0.05" stroke="#4ea1ff" stroke-opacity="0.29" stroke-width="1.1"/>
+  <path d="M320 94L452 126L320 158L188 126Z" fill="#4ea1ff" fill-opacity="0.07" stroke="#4ea1ff" stroke-opacity="0.42" stroke-width="1.1"/>
+  <path d="M320 113L452 145L320 177L188 145Z" fill="#4ea1ff" fill-opacity="0.1" stroke="#4ea1ff" stroke-opacity="0.55" stroke-width="1.1"/>
+  <circle cx="320" cy="113" r="2.6" fill="#9ecbff" opacity="0.7"/>
+  <circle cx="452" cy="145" r="2.6" fill="#9ecbff" opacity="0.7"/>
+  <circle cx="320" cy="177" r="2.6" fill="#9ecbff" opacity="0.7"/>
+  <circle cx="188" cy="145" r="2.6" fill="#9ecbff" opacity="0.7"/>
+  <path d="M320 33L358 42L320 51L282 42Z" fill="#9ecbff" fill-opacity="0.1" stroke="#9ecbff" stroke-opacity="0.6" stroke-width="1.1"/>
+</svg>
