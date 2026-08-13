@@ -158,10 +158,16 @@ export default function Home() {
           </a>
 
           <div className="site-intro">
-            <p className="site-signature">
+            {/* Il titolo della pagina è il nome, e sta qui.
+                Stava nel claim là sotto, che è la cosa più grande che si vede
+                ma non dice chi è: un h1 che si riscrive da solo ogni due
+                secondi non è il titolo di niente. Chi cerca questo sito lo
+                cerca per nome, e il nome era in un paragrafo qualunque.
+                Cambia solo il tag: la forma la dà .site-signature. */}
+            <h1 className="site-signature">
               <img src="/logo-mark.webp" width={256} height={256} alt="" />
               {home.nome}
-            </p>
+            </h1>
             <p className="site-bio">{home.bio}</p>
             <a className="site-cta" href="#contatti">
               {home.ctaLabel} <ArrowUpRight aria-hidden="true" />
@@ -170,12 +176,14 @@ export default function Home() {
         </header>
 
         <div className="site-stage">
-          <h1 className="site-title">
+          {/* Resta il claim che è sempre stato, con la sua stessa forma: solo,
+              non è più il titolo del documento — quello adesso è il nome. */}
+          <p className="site-title">
             <span className="site-title-ghost">{home.titleGhost}</span>
             <span className="site-title-live">
               <TypeCycle words={home.roles} />
             </span>
-          </h1>
+          </p>
 
           {/* Il piedistallo dove andrà il ritratto ritagliato: finché non c'è,
               regge da solo la composizione invece di lasciare un buco. */}
@@ -307,11 +315,15 @@ export default function Home() {
             </a>
           )}
 
+          {/* rel="me" e non solo noreferrer: dice che di là c'è la stessa
+              persona di qua, ed è il verso mancante del sameAs dei dati
+              strutturati. Vale però solo se anche i due profili rimandano a
+              questo indirizzo — la parte che non si può scrivere da qui. */}
           <div className="site-social">
-            <a href={contact.github} target="_blank" rel="noreferrer" aria-label="GitHub">
+            <a href={contact.github} target="_blank" rel="me noreferrer" aria-label="GitHub">
               <GithubIcon aria-hidden="true" />
             </a>
-            <a href={contact.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn">
+            <a href={contact.linkedin} target="_blank" rel="me noreferrer" aria-label="LinkedIn">
               <LinkedinIcon aria-hidden="true" />
             </a>
             <a href={`mailto:${contact.email}`} aria-label="Email">
