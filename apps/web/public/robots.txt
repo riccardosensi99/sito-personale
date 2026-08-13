@@ -1,10 +1,20 @@
 # Il backoffice non compare qui: il suo path è configurabile proprio per non
 # essere noto, e scriverlo in un file pubblico lo renderebbe il primo posto dove
 # cercarlo. A tenerlo fuori dagli indici è l'header X-Robots-Tag di nginx.
+#
+# /api/ e /uploads/ qui non ci sono più, e non è una dimenticanza.
+#
+# Un Disallow non dice «non indicizzare»: dice «non leggere». E siccome questo
+# sito è una pagina vuota finché React non la riempie coi dati dell'API, quel
+# Disallow impediva a Googlebot di leggerli proprio mentre disegnava la pagina.
+# Quello che poteva finire nell'indice era la home coi testi di ripiego e zero
+# progetti — cioè la sola parte del sito che non è stata scritta da nessuno.
+#
+# A tenere API e CV fuori dagli indici è di nuovo X-Robots-Tag, che è l'header
+# fatto per questo: nginx lo mette sulle risposte di /api/ e sui pdf di
+# /uploads/. Le immagini dei progetti restano indicizzabili, e va bene così.
 
 User-agent: *
 Allow: /
-Disallow: /api/
-Disallow: /uploads/
 
 Sitemap: https://riccardosensi.com/sitemap.xml
