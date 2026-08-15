@@ -88,6 +88,13 @@ export function useJsonLd(dati: object | null) {
 
   useEffect(() => {
     if (!serializzato) return;
+
+    // In index.html ce n'è una scritta a mano, per chi legge la pagina senza
+    // eseguirla. Da qui in poi è di troppo: dice le stesse cose di questa ma coi
+    // valori di ripiego, e due schede della stessa persona sono un modo di
+    // chiedere a chi legge quale delle due vale.
+    document.getElementById('dati-statici')?.remove();
+
     const script = document.createElement('script');
     script.type = 'application/ld+json';
     script.textContent = serializzato;

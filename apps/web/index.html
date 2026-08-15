@@ -117,6 +117,23 @@
       @keyframes site-opening-fade {
         to { opacity: 0; }
       }
+
+      /* Lo scheletro qui sotto. Poche righe e in linea per lo stesso motivo
+         della copertina: il foglio vero arriva dopo, e senza JavaScript non
+         arriva affatto: sarebbe la pagina intera, e deve restare leggibile. */
+      .scheletro {
+        max-width: 640px;
+        margin: 0 auto;
+        padding: 12vh 24px;
+        font-family: system-ui, sans-serif;
+        color: #14110f;
+      }
+
+      .scheletro h1 { margin: 0 0 6px; font-size: 34px; letter-spacing: -0.02em; }
+      .scheletro p { margin: 0 0 18px; line-height: 1.55; }
+      .scheletro-ruolo { color: #ff5324; font-weight: 600; }
+      .scheletro ul { margin: 0; padding: 0; list-style: none; }
+      .scheletro li { display: inline-block; margin: 0 14px 8px 0; }
     </style>
 
     <meta property="og:type" content="website" />
@@ -133,6 +150,35 @@
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="Riccardo Sensi — Full Stack Developer" />
     <meta name="twitter:card" content="summary_large_image" />
+
+    <!--
+      La scheda di Google, scritta qui e non solo da React.
+
+      Home.tsx ne monta una sua, più ricca, coi contenuti veri del backoffice: è
+      quella che vale, e appena React arriva prende il posto di questa (a farla
+      sparire è useJsonLd in lib/seo.ts, che cerca proprio questo id). Ma quella
+      esiste solo dopo il bundle, e chi legge la pagina senza eseguire niente —
+      il primo passaggio di un motore, un'anteprima, un aggregatore — fino a ora
+      non trovava nemmeno il nome in una forma che si potesse leggere come dato.
+
+      Sono gli stessi valori di lib/defaults.ts: cambiandoli lì vanno cambiati
+      anche qui.
+    -->
+    <script type="application/ld+json" id="dati-statici">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Riccardo Sensi",
+        "jobTitle": "Full stack developer",
+        "description": "Costruisco gestionali, automazioni e interfacce che stanno in piedi anche quando i dati veri arrivano tutti insieme.",
+        "url": "%SITE_URL%/",
+        "image": "%SITE_URL%/og.jpg",
+        "sameAs": [
+          "https://github.com/riccardosensi99",
+          "https://linkedin.com/in/riccardo-sensi-developer"
+        ]
+      }
+    </script>
   </head>
   <body>
     <!--
@@ -154,6 +200,15 @@
       (function () {
         var copertina = document.getElementById('copertina');
         var radice = document.documentElement;
+
+        // Lo scheletro racconta la home: altrove è il contenuto sbagliato, e
+        // resterebbe in vista tutto il tempo che ci mette il bundle. Sulla home
+        // invece resta fin sotto a React: la copertina lo nasconde, e se il
+        // bundle non arrivasse è l'unica cosa che si potrebbe ancora leggere.
+        if (location.pathname !== '/') {
+          var scheletro = document.getElementById('scheletro');
+          if (scheletro) scheletro.remove();
+        }
 
         // Lo stesso index.html serve tutte le rotte: la copertina è solo della
         // home. E chi arriva su un'ancora è venuto per una sezione, non per una
@@ -187,7 +242,41 @@
       })();
     </script>
 
-    <div id="root"></div>
+    <!--
+      Lo scheletro della home, dentro #root perché è lì che React scrive: quando
+      arriva, questo se ne va (lo toglie main.tsx, un istante prima di dipingere).
+
+      Serve a chi la pagina non la esegue. Il sito è una sola riga di HTML e un
+      bundle da 425KB: senza JavaScript qui non c'era niente da leggere, e il
+      nome — che è poi la parola con cui uno lo cerca — non compariva in nessun
+      posto che contasse. Chi passa e non esegue niente ora trova almeno chi
+      sono, cosa faccio e dove andare a vedere.
+
+      Non è una pagina finta per i motori: dice le stesse cose che React dice
+      subito dopo, prese da lib/defaults.ts. Cambiando quelle vanno cambiate
+      anche queste.
+    -->
+    <div id="root">
+      <div class="scheletro" id="scheletro">
+        <h1>Riccardo Sensi</h1>
+        <p class="scheletro-ruolo">Full stack developer</p>
+        <p>
+          Costruisco gestionali, automazioni e interfacce che stanno in piedi anche quando i dati
+          veri arrivano tutti insieme. Lavoro sul pezzo intero: il database, l'API, l'interfaccia e
+          la macchina su cui gira.
+        </p>
+        <ul>
+          <li><a href="/#chi-sono">Chi sono</a></li>
+          <li><a href="/#progetti">Progetti</a></li>
+          <li><a href="/#servizi">Servizi</a></li>
+          <li><a href="/#contatti">Contatti</a></li>
+        </ul>
+        <ul>
+          <li><a href="https://github.com/riccardosensi99" rel="me">GitHub</a></li>
+          <li><a href="https://linkedin.com/in/riccardo-sensi-developer" rel="me">LinkedIn</a></li>
+        </ul>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

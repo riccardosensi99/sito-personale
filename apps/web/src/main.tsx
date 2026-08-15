@@ -16,6 +16,12 @@ import './styles/global.css';
 
 import { App } from './App';
 
+/// Lo scheletro che index.html tiene dentro #root è il sito per chi non esegue
+/// JavaScript. Qui JavaScript c'è, quindi il suo turno è finito: lo togliamo
+/// noi un istante prima di dipingere invece di lasciarlo svuotare a React, che
+/// lo farebbe comunque ma senza dirlo da nessuna parte.
+document.getElementById('scheletro')?.remove();
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
