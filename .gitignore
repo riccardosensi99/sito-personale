@@ -19,3 +19,6 @@ uploads/
 apps/api/generated/
 certs/
 backup/
+
+# Stato locale di wrangler dev / deploy
+.wrangler/
