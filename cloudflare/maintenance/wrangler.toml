@@ -1,0 +1,26 @@
+# Worker della pagina di manutenzione (vedi worker.js).
+#
+# Deploy, dalla root del repo:
+#   npx wrangler login                                    # una volta sola
+#   npx wrangler deploy --config cloudflare/maintenance/wrangler.toml
+#
+# Anteprima della pagina in locale (qui l'"origine" non esiste, quindi si vede
+# sempre la manutenzione):
+#   npx wrangler dev --config cloudflare/maintenance/wrangler.toml
+
+name = "riccardosensi-maintenance"
+main = "worker.js"
+compatibility_date = "2026-11-01"
+
+# Gira solo sulle rotte qui sotto; ogni richiesta passa dal Worker, che la
+# inoltra all'origine senza toccarla finché l'origine risponde.
+routes = [
+  { pattern = "riccardosensi.com/*", zone_name = "riccardosensi.com" },
+  { pattern = "staging.riccardosensi.com/*", zone_name = "riccardosensi.com" },
+]
+
+# Il logo viene importato come dati binari e servito dal Worker stesso.
+[[rules]]
+type = "Data"
+globs = ["**/*.webp"]
+fallthrough = true
